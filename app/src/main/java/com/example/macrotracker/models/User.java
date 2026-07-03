@@ -7,21 +7,22 @@ import java.time.LocalDate;
 import java.time.Period;
 public class User {
     private String userId; // UUID from Supabase
-    private String email;
+    private String name;
     private float height;
     private LocalDate birthday;
     private char gender;
     private double activityMultiplier;
-    private String goal;
+    private String currentGoal;
+    private String timezone;
 
     // constructor with args
-    public User (String userId, String email, float height, LocalDate birthday, char gender, double activityMultiplier, String goal) {
+    public User (String userId, String name, float height, LocalDate birthday, char gender, double activityMultiplier, String currentGoal, String timezone) {
         // basic checks to prevent invalid users
         if (userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException("userId cannot be null or empty");
         }
-        if (email == null || !email.contains("@")) {
-            throw new IllegalArgumentException("email cannot be null and must contain '@' ");
+        if (name == null && name.length() > 20) {
+            throw new IllegalArgumentException("name must be 20 characters or fewer");
         }
         if (height <=0 ) {
             throw new IllegalArgumentException("height must be positive");
@@ -37,22 +38,24 @@ public class User {
         }
 
         this.userId = userId;
-        this.email = email;
+        this.name = name;
         this.height = height;
         this.birthday = birthday;
         this.gender = gender;
         this.activityMultiplier = activityMultiplier;
-        this.goal = goal;
+        this.currentGoal = currentGoal;
+        this.timezone = timezone;
     }
 
     // Getters
     public String getUserId() {return userId;}
-    public String getEmail() {return email;}
+    public String getName() {return name;}
     public float getHeight() {return height;}
     public LocalDate getBirthday() {return birthday;}
     public char getGender() {return gender;}
     public double getActivityMultiplier() {return activityMultiplier;}
-    public String getGoal() {return goal;}
+    public String getCurrentGoal() {return currentGoal;}
+    public String getTimezone() {return timezone;}
 
     // Computed age
     public int getAge() {
@@ -62,12 +65,13 @@ public class User {
     public static User fromJson(JSONObject json) throws JSONException {
         return new User(
                 json.getString("user_id"),
-                json.getString("email"),
+                json.isNull("name") ? null : json.getString("name"),
                 (float) json.getDouble("height"),
                 LocalDate.parse(json.getString("birthday")), // expects YYYY-MM-DD format
                 json.getString("gender").charAt(0),
                 json.getDouble("activity_multiplier"),
-                json.isNull("goal")? null : json.getString("goal")
+                json.isNull("current_goal")? null : json.getString("current_goal"),
+                json.isNull("timezone") ? null : json.getString("timezone")
         );
     }
 
@@ -86,9 +90,10 @@ public class User {
 
     @Override
     public String toString() {
-        return "User {userId = '" + userId + "', email= '" + email +
+        return "User {userId = '" + userId + "', name= '" + name +
                 "', height = '" + height + "', birthday = '" + birthday + "', gender = '" +
-                gender + "', activityMultiplier = '" + activityMultiplier + "', goal = '" + goal + "'}";
+                gender + "', activityMultiplier = '" + activityMultiplier + "', currentGoal = '" + currentGoal +
+                "', timezone" + timezone + "}";
     }
 
 
