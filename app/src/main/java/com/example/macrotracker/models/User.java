@@ -3,28 +3,29 @@ package com.example.macrotracker.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 public class User {
     private String userId; // UUID from Supabase
     private String name;
-    private float height;
+    private BigDecimal height;
     private LocalDate birthday;
     private char gender;
-    private double activityMultiplier;
+    private BigDecimal activityMultiplier;
     private String currentGoal;
     private String timezone;
 
     // constructor with args
-    public User (String userId, String name, float height, LocalDate birthday, char gender, double activityMultiplier, String currentGoal, String timezone) {
+    public User (String userId, String name, BigDecimal height, LocalDate birthday, char gender, BigDecimal activityMultiplier, String currentGoal, String timezone) {
         // basic checks to prevent invalid users
         if (userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException("userId cannot be null or empty");
         }
-        if (name == null && name.length() > 20) {
+        if (name == null || name.length() > 20) {
             throw new IllegalArgumentException("name must be 20 characters or fewer");
         }
-        if (height <=0 ) {
+        if (height == null || height.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("height must be positive");
         }
         if (birthday == null || birthday.isAfter(LocalDate.now())) {
@@ -33,8 +34,8 @@ public class User {
         if (gender != 'M' && gender != 'F') {
             throw  new IllegalArgumentException("gender must be either 'M' or 'F' ");
         }
-        if (activityMultiplier <= 0) {
-            throw new IllegalArgumentException("Invalid activity level");
+        if (height == null || height.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("height must be positive");
         }
 
         this.userId = userId;
@@ -50,10 +51,10 @@ public class User {
     // Getters
     public String getUserId() {return userId;}
     public String getName() {return name;}
-    public float getHeight() {return height;}
+    public BigDecimal getHeight() {return height;}
     public LocalDate getBirthday() {return birthday;}
     public char getGender() {return gender;}
-    public double getActivityMultiplier() {return activityMultiplier;}
+    public BigDecimal getActivityMultiplier() {return activityMultiplier;}
     public String getCurrentGoal() {return currentGoal;}
     public String getTimezone() {return timezone;}
 
@@ -66,11 +67,11 @@ public class User {
         return new User(
                 json.getString("user_id"),
                 json.isNull("name") ? null : json.getString("name"),
-                (float) json.getDouble("height"),
-                LocalDate.parse(json.getString("birthday")), // expects YYYY-MM-DD format
+                new BigDecimal(json.getString("height")),
+                LocalDate.parse(json.getString("birthday")),
                 json.getString("gender").charAt(0),
-                json.getDouble("activity_multiplier"),
-                json.isNull("current_goal")? null : json.getString("current_goal"),
+                new BigDecimal(json.getString("activity_multiplier")),
+                json.isNull("current_goal") ? null : json.getString("current_goal"),
                 json.isNull("timezone") ? null : json.getString("timezone")
         );
     }

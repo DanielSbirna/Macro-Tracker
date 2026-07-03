@@ -3,27 +3,29 @@ package com.example.macrotracker.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.Period;
 
 public class WeightLog {
     private Long weightId; // null until insert, DB auto increments
     private String userId; // UUID
-    private float weightValue;
+    private BigDecimal weightValue;
     private LocalDate dateRecorded;
 
     // Constructor for NEW record
-    public WeightLog (String userId, float weightValue, LocalDate dateRecorded) {
+    public WeightLog (String userId, BigDecimal weightValue, LocalDate dateRecorded) {
         this (null, userId, weightValue, dateRecorded);
     }
 
     // full constructor - internal use and formJson
-    public WeightLog (Long weightId, String userId, float weightValue, LocalDate dateRecorded) {
+    public WeightLog (Long weightId, String userId, BigDecimal weightValue, LocalDate dateRecorded) {
         // checks to prevent invalid logs
         if (userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException("userId cannot be null or empty");
         }
-        if (weightValue <= 0 || weightValue > 999.99f) {
+        if (weightValue == null
+                || weightValue.compareTo(BigDecimal.ZERO) <= 0
+                || weightValue.compareTo(new BigDecimal("999.99")) > 0) {
             throw new IllegalArgumentException("weightValue must be positive and below 999.99");
         }
         if (dateRecorded == null) {
@@ -42,14 +44,14 @@ public class WeightLog {
     // Getters
     public Long getWeightId() {return weightId;}
     public String getUserId() {return userId;}
-    public float getWeightValue() {return weightValue;}
+    public BigDecimal getWeightValue() {return weightValue;}
     public LocalDate getDateRecorded() {return dateRecorded;}
 
     public static WeightLog fromJson(JSONObject json) throws JSONException {
         return new WeightLog(
                 json.getLong("weight_id"),
                 json.getString("user_id"),
-                (float) json.getDouble("weight_value"),
+                new BigDecimal(json.getString("weight_value")),
                 LocalDate.parse(json.getString("date_recorded"))
         );
     }
