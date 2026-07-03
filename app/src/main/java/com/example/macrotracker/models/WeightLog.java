@@ -1,0 +1,84 @@
+package com.example.macrotracker.models;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.time.LocalDate;
+import java.time.Period;
+
+public class WeightLog {
+    private Long weightId; // null until insert, DB auto increments
+    private String userId; // UUID
+    private float weightValue;
+    private LocalDate dateRecorded;
+
+    // Constructor for NEW record
+    public WeightLog (String userId, float weightValue, LocalDate dateRecorded) {
+        this (null, userId, weightValue, dateRecorded);
+    }
+
+    // full constructor - internal use and formJson
+    public WeightLog (Long weightId, String userId, float weightValue, LocalDate dateRecorded) {
+        // checks to prevent invalid logs
+        if (userId == null || userId.isEmpty()) {
+            throw new IllegalArgumentException("userId cannot be null or empty");
+        }
+        if (weightValue <= 0 || weightValue > 999.99f) {
+            throw new IllegalArgumentException("weightValue must be positive and below 999.99");
+        }
+        if (dateRecorded == null) {
+            throw new IllegalArgumentException("dateRecorded cannot be null");
+        }
+        if (dateRecorded.isAfter(LocalDate.now())) {
+            throw new IllegalArgumentException("dateRecorded cannot be in the future");
+        }
+
+        this.weightId = weightId;
+        this.userId = userId;
+        this.weightValue = weightValue;
+        this.dateRecorded = dateRecorded;
+    }
+
+    // Getters
+    public Long getWeightId() {return weightId;}
+    public String getUserId() {return userId;}
+    public float getWeightValue() {return weightValue;}
+    public LocalDate getDateRecorded() {return dateRecorded;}
+
+    public static WeightLog fromJson(JSONObject json) throws JSONException {
+        return new WeightLog(
+                json.getLong("weight_id"),
+                json.getString("user_id"),
+                (float) json.getDouble("weight_value"),
+                LocalDate.parse(json.getString("date_recorded"))
+        );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof WeightLog)) return false;
+        WeightLog that = (WeightLog) o;
+
+        if (weightId != null && that.weightId != null) {
+            return weightId.equals(that.weightId);
+        }
+        // fallback for pre insert, compare by unique
+        return userId.equals(that.userId) && dateRecorded.equals(that.dateRecorded);
+    }
+
+    @Override
+    public int hashCode() {
+        if (weightId != null) {
+            return weightId.hashCode();
+        }
+        // prevention of collision - multiply by a prime number
+        return userId.hashCode() * 31 + dateRecorded.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Weight logged {weightId = '" + weightId + "', userId= '" + userId +
+                "', weightValue = '" + weightValue + "', dateRecorded = '" + dateRecorded + "'}";
+    }
+}

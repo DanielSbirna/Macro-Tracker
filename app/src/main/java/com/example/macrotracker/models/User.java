@@ -93,8 +93,6 @@ public class User {
         return "User {userId = '" + userId + "', name= '" + name +
                 "', height = '" + height + "', birthday = '" + birthday + "', gender = '" +
                 gender + "', activityMultiplier = '" + activityMultiplier + "', currentGoal = '" + currentGoal +
-                "', timezone" + timezone + "}";
+                "', timezone" + timezone + "'}";
     }
-
-
 }
