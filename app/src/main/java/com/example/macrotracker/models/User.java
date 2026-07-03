@@ -34,8 +34,8 @@ public class User {
         if (gender != 'M' && gender != 'F') {
             throw  new IllegalArgumentException("gender must be either 'M' or 'F' ");
         }
-        if (height == null || height.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("height must be positive");
+        if (activityMultiplier == null || activityMultiplier.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("activityMultiplier must be positive");
         }
 
         this.userId = userId;
