@@ -26,6 +26,14 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "GEMINI_API_KEY", "\"${localProperties.getProperty("GEMINI_API_KEY", "")}\"")
+        buildConfigField("String","SUPABASE_ANON_KEY", "\"${localProperties.getProperty("SUPABASE_ANON_KEY", "")}\"")
+        buildConfigField("String","SUPABASE_URL","\"${localProperties.getProperty("SUPABASE_URL", "")}\"")
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+        isCoreLibraryDesugaringEnabled = true
     }
 
     buildTypes {
@@ -37,6 +45,7 @@ android {
             )
         }
     }
+    // LocalDate birthday
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -58,5 +67,8 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation(libs.okhttp)
+
+    // LocalDate birthday - fix for minSdk 24, it must be 26 or higher
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
 }
