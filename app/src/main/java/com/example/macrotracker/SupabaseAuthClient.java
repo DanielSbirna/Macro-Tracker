@@ -1,9 +1,11 @@
 package com.example.macrotracker;
 
+import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -68,7 +70,8 @@ public class SupabaseAuthClient {
                     try{
                         JSONObject json = new JSONObject(responseBody);
                         String accessToken = json.getString("access_token");
-                        callback.onSuccess(accessToken);
+                        String refreshToken = json.getString ("refresh_token");
+                        callback.onSuccess(accessToken,refreshToken);
                     } catch (Exception parseError) {
                         callback.onError(parseError);
                     }
@@ -79,6 +82,140 @@ public class SupabaseAuthClient {
 
         } catch (Exception e) {
             callback.onError(e);
+        }
+    }
+
+    public void signIn(String email, String password, AuthCallback callback) {
+        try{
+            JSONObject requestJson = new JSONObject()
+                    .put("email", email)
+                    .put("password", password);
+
+            RequestBody body = RequestBody.create(requestJson.toString(), JSON);
+
+            Request request = new Request.Builder()
+                    .url(SUPABASE_URL + "/auth/v1/token?grant_type=password")
+                    .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    callback.onError(e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        callback.onError(new IOException("Signup failed: " + response.code()));
+                        return;
+                    }
+                    String responseBody = response.body() != null ? response.body().string() : null;
+                    if (responseBody == null) {
+                        callback.onError(new IOException("Empty response body"));
+                        return;
+                    }
+                    try {
+                        JSONObject json = new JSONObject(responseBody);
+                        callback.onSuccess(json.getString("access_token"), json.getString("refresh_token"));
+                    } catch (Exception parseError) {
+                        callback.onError(parseError);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            callback.onError(e);
+        }
+    }
+
+    public void refreshSession(String refreshToken, AuthCallback callback) {
+        try {
+            JSONObject requestJson = new JSONObject()
+                    .put("refresh_token", refreshToken);
+
+            RequestBody body = RequestBody.create(requestJson.toString(), JSON);
+
+            Request request = new Request.Builder()
+                    .url(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token")
+                    .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    callback.onError(e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    if (!response.isSuccessful()) {
+                        callback.onError(new IOException("Refresh failed: " + response.code()));
+                        return;
+                    }
+                    String responseBody = response.body() != null ? response.body().string() : null;
+                    if (responseBody == null) {
+                        callback.onError(new IOException("Empty response body"));
+                        return;
+                    }
+                    try {
+                        JSONObject json = new JSONObject(responseBody);
+                        callback.onSuccess(json.getString("access_token"), json.getString("refresh_token"));
+                    } catch (Exception parseError) {
+                        callback.onError(parseError);
+                    }
+                }
+            });
+        } catch (Exception e) {
+            callback.onError(e);
+        }
+    }
+
+    public void signOut(String accessToken, AuthCallback callback) {
+        Request request = new Request.Builder()
+                .url(SUPABASE_URL + "/auth/v1/logout")
+                .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
+                .addHeader("Authorization", "Bearer " + accessToken)
+                .post(RequestBody.create(new byte[0], null))
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onError(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) {
+                // logout succeeds or token was already invalid either way
+                callback.onSuccess(null, null);
+            }
+        });
+    }
+
+    public String[] refreshSessionSync(String refreshToken) throws IOException, JSONException {
+        JSONObject requestJson = new JSONObject()
+        .put("refresh_token", refreshToken);
+
+        RequestBody body = RequestBody.create(requestJson.toString(), JSON);
+
+        Request request = new Request.Builder()
+                .url(SUPABASE_URL + "/auth/v1/token/?grant_type=refresh_token")
+                .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
+                .post(body)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if(!response.isSuccessful()) {
+                throw new IOException("Refresh failed: " + response.code());
+            }
+            String responseBody = response.body() != null ? response.body().string() : null;
+            if (response == null) {
+                throw new IOException("Empty response body");
+            }
+            JSONObject json = new JSONObject(responseBody);
+            return new String[] {json.getString("access_token"), json.getString("refresh_token") };
         }
     }
 }

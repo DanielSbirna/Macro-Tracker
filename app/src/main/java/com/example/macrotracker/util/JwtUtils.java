@@ -1,4 +1,4 @@
-package com.example.macrotracker.data;
+package com.example.macrotracker.util;
 
 import android.util.Base64;
 
