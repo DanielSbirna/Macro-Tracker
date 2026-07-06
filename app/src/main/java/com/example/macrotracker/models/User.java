@@ -3,6 +3,8 @@ package com.example.macrotracker.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.OffsetDateTime;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
@@ -15,9 +17,10 @@ public class User {
     private BigDecimal activityMultiplier;
     private String currentGoal;
     private String timezone;
+    private OffsetDateTime deletionRequestedAt;
 
     // constructor with args
-    public User (String userId, String name, BigDecimal height, LocalDate birthday, char gender, BigDecimal activityMultiplier, String currentGoal, String timezone) {
+    public User (String userId, String name, BigDecimal height, LocalDate birthday, char gender, BigDecimal activityMultiplier, String currentGoal, String timezone, OffsetDateTime deletionRequestedAt) {
         // basic checks to prevent invalid users
         if (userId == null || userId.isEmpty()) {
             throw new IllegalArgumentException("userId cannot be null or empty");
@@ -46,6 +49,7 @@ public class User {
         this.activityMultiplier = activityMultiplier;
         this.currentGoal = currentGoal;
         this.timezone = timezone;
+        this.deletionRequestedAt = deletionRequestedAt;
     }
 
     // Getters
@@ -57,6 +61,11 @@ public class User {
     public BigDecimal getActivityMultiplier() {return activityMultiplier;}
     public String getCurrentGoal() {return currentGoal;}
     public String getTimezone() {return timezone;}
+    public OffsetDateTime getDeletionRequestedAt() {return deletionRequestedAt;}
+
+    public boolean isFlaggedForDeletion() {
+        return deletionRequestedAt != null;
+    }
 
     // Computed age
     public int getAge() {
@@ -72,8 +81,23 @@ public class User {
                 json.getString("gender").charAt(0),
                 new BigDecimal(json.getString("activity_multiplier")),
                 json.isNull("current_goal") ? null : json.getString("current_goal"),
-                json.isNull("timezone") ? null : json.getString("timezone")
+                json.isNull("timezone") ? null : json.getString("timezone"),
+                json.isNull("deletion_requested_at") ? null : OffsetDateTime.parse(json.getString("deletion_requested_at"))
         );
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("user_id", userId);
+        json.put("name", name);
+        json.put("height", height.toPlainString());
+        json.put("birthday", birthday.toString());
+        json.put("gender", String.valueOf("gender"));
+        json.put("activity_multiplier", activityMultiplier.toPlainString());
+        json.put("current_goal", currentGoal);
+        json.put("timezone", timezone);
+        // deletion_requested_at intentionally omitted — set via flagForDeletion(), not general profile updates
+        return json;
     }
 
     @Override
@@ -94,6 +118,6 @@ public class User {
         return "User {userId = '" + userId + "', name= '" + name +
                 "', height = '" + height + "', birthday = '" + birthday + "', gender = '" +
                 gender + "', activityMultiplier = '" + activityMultiplier + "', currentGoal = '" + currentGoal +
-                "', timezone" + timezone + "'}";
+                "', timezone" + timezone +  "', deletionRequestAt = '" + deletionRequestedAt + "'}";
     }
 }

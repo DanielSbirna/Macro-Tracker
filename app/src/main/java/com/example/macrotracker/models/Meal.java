@@ -80,7 +80,7 @@ public class Meal {
     public BigDecimal getFats() {return fats;}
     public OffsetDateTime getLoggedAt() {return loggedAt;}
 
-    public Meal fromJson(JSONObject json) throws JSONException {
+    public static Meal fromJson(JSONObject json) throws JSONException {
         return new Meal(
                 json.getLong("meal_id"),
                 json.getString("user_id"),
@@ -92,6 +92,19 @@ public class Meal {
                 new BigDecimal(json.getString("fats")),
                 OffsetDateTime.parse(json.getString("logged_at"))
         );
+    }
+
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("user_id", userId);
+        json.put("title", title);
+        json.put("type", type.name());
+        json.put("calories", calories.toPlainString());
+        json.put("protein", protein.toPlainString());
+        json.put("carbs", carbs.toPlainString());
+        json.put("fats", fats.toPlainString());
+        json.put("logged_at", loggedAt.toString());
+        return json;
     }
 
     @Override
