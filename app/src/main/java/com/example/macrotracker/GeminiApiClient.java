@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -19,7 +18,7 @@ import okhttp3.Response;
 public class GeminiApiClient {
     private final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30,TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .build();
 
@@ -30,14 +29,16 @@ public class GeminiApiClient {
 
     public void estimateMacros(String description, MacroCallback callback) {
         try {
-            String prompt = "You are a nutrition estimation assistant. Estimate calories, protein, carbs, and fat for this food description, assuming a typical serving if unspecified: \""
+            String prompt = "Estimate calories, protein, carbs and fats for this food description,"
+                    + "assuming a typical serving if unspecified: \""
                     + description + "\". "
-                    + "Respond only with the estimate.";
+                    + "Respond ONLY with a JSON object in this exact format, no other text: "
+                    + "{\"calories\": number, \"protein\": number, \"carbs\": number, \"fats\": number}";
 
             JSONObject part = new JSONObject().put("text", prompt);
             JSONObject content = new JSONObject()
-                    .put ("role", "user")
-                    .put ("parts", new JSONArray().put(part));
+                    .put("role", "user")
+                    .put("parts", new JSONArray().put(part));
 
             JSONObject requestJson = new JSONObject().put("contents", new JSONArray().put(content));
 
@@ -66,7 +67,19 @@ public class GeminiApiClient {
                         callback.onError(new IOException("Empty response body"));
                         return;
                     }
-                    callback.onSuccess(responseBody);
+                    try {
+                        JSONObject envelope = new JSONObject(responseBody);
+                        String text = envelope
+                                .getJSONArray("candidates")
+                                .getJSONObject(0)
+                                .getJSONObject("content")
+                                .getJSONArray("parts")
+                                .getJSONObject(0)
+                                .getString("text");
+                        callback.onSuccess(text);
+                    } catch (Exception parseError) {
+                        callback.onError(parseError);
+                    }
                 }
             });
 
@@ -74,5 +87,4 @@ public class GeminiApiClient {
             callback.onError(e);
         }
     }
-
 }
