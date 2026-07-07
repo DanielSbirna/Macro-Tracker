@@ -56,6 +56,14 @@ public class WeightLog {
         );
     }
 
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("user_id", userId);
+        json.put("weight_value", weightValue.toPlainString());
+        json.put("date_recorded", dateRecorded.toString());
+        return json;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
