@@ -39,20 +39,20 @@ public class MainActivity extends AppCompatActivity {
 
         // test api db
 
-        Log.d("AuthTest", "Starting signup test");
-
-        SupabaseAuthClient authClient = new SupabaseAuthClient();
-
-        authClient.signUp("test@gmail.com", "testpassword123", new AuthCallback() {
-            @Override
-            public void onSuccess(String accessToken) {
-                Log.d("AuthTest", accessToken);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.e("AuthTest", "Error", e);
-            }
-        });
+//        Log.d("AuthTest", "Starting signup test");
+//
+//        SupabaseAuthClient authClient = new SupabaseAuthClient();
+//
+//        authClient.signUp("test@gmail.com", "testpassword123", new AuthCallback() {
+//            @Override
+//            public void onSuccess(String accessToken) {
+//                Log.d("AuthTest", accessToken);
+//            }
+//
+//            @Override
+//            public void onError(Exception e) {
+//                Log.e("AuthTest", "Error", e);
+//            }
+//        });
     }
 }

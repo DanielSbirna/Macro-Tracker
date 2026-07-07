@@ -1,6 +1,5 @@
 package com.example.macrotracker;
 
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -196,26 +195,26 @@ public class SupabaseAuthClient {
 
     public String[] refreshSessionSync(String refreshToken) throws IOException, JSONException {
         JSONObject requestJson = new JSONObject()
-        .put("refresh_token", refreshToken);
+                .put("refresh_token", refreshToken);
 
         RequestBody body = RequestBody.create(requestJson.toString(), JSON);
 
         Request request = new Request.Builder()
-                .url(SUPABASE_URL + "/auth/v1/token/?grant_type=refresh_token")
+                .url(SUPABASE_URL + "/auth/v1/token?grant_type=refresh_token")
                 .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
                 .post(body)
                 .build();
 
         try (Response response = client.newCall(request).execute()) {
-            if(!response.isSuccessful()) {
+            if (!response.isSuccessful()) {
                 throw new IOException("Refresh failed: " + response.code());
             }
             String responseBody = response.body() != null ? response.body().string() : null;
-            if (response == null) {
+            if (responseBody == null) {
                 throw new IOException("Empty response body");
             }
             JSONObject json = new JSONObject(responseBody);
-            return new String[] {json.getString("access_token"), json.getString("refresh_token") };
+            return new String[] { json.getString("access_token"), json.getString("refresh_token") };
         }
     }
 }
