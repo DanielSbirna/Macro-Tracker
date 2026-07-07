@@ -74,6 +74,17 @@ public class TargetMacros {
         );
     }
 
+    public JSONObject toJson() throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("user_id", userId);
+        json.put("created_at", createdAt.toString());
+        json.put("calories", calories.toPlainString());
+        json.put("protein", protein.toPlainString());
+        json.put("carbs", carbs.toPlainString());
+        json.put("fats", fats.toPlainString());
+        return json;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
