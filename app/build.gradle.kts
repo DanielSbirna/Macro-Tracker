@@ -54,6 +54,11 @@ android {
     buildFeatures {
         buildConfig = true
     }
+
+    // test
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
