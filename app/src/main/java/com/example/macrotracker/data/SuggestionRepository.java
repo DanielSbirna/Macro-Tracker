@@ -2,6 +2,7 @@ package com.example.macrotracker.data;
 
 import com.example.macrotracker.GeminiApiClient;
 import com.example.macrotracker.MacroCallback;
+import com.example.macrotracker.models.TargetMacros;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,28 +16,31 @@ public class SuggestionRepository {
         this.geminiApiClient = geminiApiClient;
     }
 
-    public void estimateMacros(String description, RepoCallback<MacroEstimate> callback ) {
-        geminiApiClient.estimateMacros(description, new MacroCallback() {
-            @Override
-            public void onSuccess(String responseJson) {
-                try {
-                    JSONObject json = new JSONObject(responseJson);
-                    MacroEstimate estimate = new MacroEstimate(
-                            new BigDecimal(json.get("calories").toString()),
-                            new BigDecimal(json.get("protein").toString()),
-                            new BigDecimal(json.get("carbs").toString()),
-                            new BigDecimal(json.get("fats").toString())
-                    );
-                    callback.onSuccess(estimate);
-                } catch (JSONException e) {
-                    callback.onError(e);
-                }
-            }
+    public void estimateMealWithSuggestion(String description, BigDecimal caloriesSoFar, BigDecimal proteinSoFar,
+                                           BigDecimal carbsSoFar, BigDecimal fatsSoFar, TargetMacros target,
+                                           RepoCallback<MacroEstimate> callback) {
+        geminiApiClient.estimateMealWithSuggestion(description, caloriesSoFar, proteinSoFar, carbsSoFar, fatsSoFar, target,
+                new MacroCallback() {
+                    @Override
+                    public void onSuccess(String responseJson) {
+                        try {
+                            JSONObject json = new JSONObject(responseJson);
+                            MacroEstimate estimate = new MacroEstimate(
+                                    new BigDecimal(json.get("calories").toString()),
+                                    new BigDecimal(json.get("protein").toString()),
+                                    new BigDecimal(json.get("carbs").toString()),
+                                    new BigDecimal(json.get("fats").toString()),
+                                    json.getString("suggestion")
+                            );
+                            callback.onSuccess(estimate);
+                        } catch (JSONException e) {
+                            callback.onError(e);
+                        }
+                    }
 
-            @Override
-            public void onError(Exception e) {
-                callback.onError(e);
-            }
-        });
-    }
-}
+                    @Override
+                    public void onError(Exception e) {
+                        callback.onError(e);
+                    }
+                });
+    }}
