@@ -17,6 +17,14 @@ public class TargetMacros {
     private BigDecimal carbs;
     private BigDecimal fats;
 
+    // Test constructor
+    public TargetMacros(BigDecimal calories, BigDecimal protein, BigDecimal carbs, BigDecimal fats) {
+        this.calories = calories;
+        this.protein = protein;
+        this.carbs = carbs;
+        this.fats = fats;
+    }
+
     // Constructor for NEW record
     public TargetMacros (String userId, OffsetDateTime createdAt, BigDecimal calories, BigDecimal protein, BigDecimal carbs, BigDecimal fats) {
         this (null, userId, createdAt, calories, protein, carbs, fats);
