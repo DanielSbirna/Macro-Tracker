@@ -1,6 +1,5 @@
 package com.example.macrotracker.data;
 
-import com.example.macrotracker.BuildConfig;
 import com.example.macrotracker.models.User;
 import com.example.macrotracker.util.JwtUtils;
 
@@ -8,28 +7,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
-import androidx.annotation.NonNull;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 public class FoodRepository {
 
-    private static final String SUPABASE_URL = BuildConfig.SUPABASE_URL;
-    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
-    private final OkHttpClient authedClient;
+    private final SupabaseRestClient restClient;
     private final TokenStorage tokenStorage;
 
-    public FoodRepository(OkHttpClient authedClient, TokenStorage tokenStorage) {
-        this.authedClient = authedClient;
+    public FoodRepository(SupabaseRestClient restClient, TokenStorage tokenStorage) {
+        this.restClient = restClient;
         this.tokenStorage = tokenStorage;
     }
 
@@ -37,73 +25,50 @@ public class FoodRepository {
         String userId = resolveUserIdOrFail(callback);
         if (userId == null) return;
 
-        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/rest/v1/user_profiles")
-                .newBuilder()
-                .addQueryParameter("user_id", "eq." + userId)
-                .addQueryParameter("select", "*")
-                .build();
+        List<String[]> params = new ArrayList<>();
+        params.add(new String[]{"user_id", "eq." + userId});
+        params.add(new String[]{"select", "*"});
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-                .get()
-                .build();
-
-        authedClient.newCall(request).enqueue(new Callback() {
+        restClient.select("user_profiles", params, new SupabaseCallback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onError(e);
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    callback.onError(new IOException("Fetch profile failed: " + response.code()));
-                    return;
-                }
-                String body = response.body() != null ? response.body().string() : null;
-                if (body == null) {
-                    callback.onError(new IOException("Empty response body"));
-                    return;
-                }
+            public void onSuccess(String responseBody) {
                 try {
-                    JSONArray arr = new JSONArray(body);
+                    JSONArray arr = new JSONArray(responseBody);
                     if (arr.length() == 0) {
                         callback.onSuccess(null); // no row yet -> onboarding not complete
                         return;
                     }
                     callback.onSuccess(User.fromJson(arr.getJSONObject(0)));
-                } catch (JSONException parseError) {
-                    callback.onError(parseError);
+                } catch (JSONException e) {
+                    callback.onError(e);
                 }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                callback.onError(e);
             }
         });
     }
 
     public void insertProfile(User user, RepoCallback<User> callback) {
-        Request request;
+        String jsonBody;
         try {
-            RequestBody body = RequestBody.create(user.toJson().toString(), JSON);
-            request = new Request.Builder()
-                    .url(SUPABASE_URL + "/rest/v1/user_profiles")
-                    .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-                    .addHeader("Prefer", "return=representation")
-                    .post(body)
-                    .build();
+            jsonBody = user.toJson().toString();
         } catch (JSONException e) {
             callback.onError(e);
             return;
         }
 
-        authedClient.newCall(request).enqueue(new Callback() {
+        restClient.insert("user_profiles", jsonBody, new SupabaseCallback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onError(e);
+            public void onSuccess(String responseBody) {
+                parseSingleUser(responseBody, "Insert profile failed", callback);
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                handleSingleRowResponse(response, "Insert profile failed", callback);
+            public void onError(Exception e) {
+                callback.onError(e);
             }
         });
     }
@@ -112,57 +77,68 @@ public class FoodRepository {
         String userId = resolveUserIdOrFail(callback);
         if (userId == null) return;
 
-        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/rest/v1/user_profiles")
-                .newBuilder()
-                .addQueryParameter("user_id", "eq." + userId)
-                .build();
+        List<String[]> params = new ArrayList<>();
+        params.add(new String[]{"user_id", "eq." + userId});
 
-        Request request;
+        String jsonBody;
         try {
-            RequestBody body = RequestBody.create(user.toJson().toString(), JSON);
-            request = new Request.Builder()
-                    .url(url)
-                    .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-                    .addHeader("Prefer", "return=representation")
-                    .patch(body)
-                    .build();
+            jsonBody = user.toJson().toString();
         } catch (JSONException e) {
             callback.onError(e);
             return;
         }
 
-        authedClient.newCall(request).enqueue(new Callback() {
+        restClient.update("user_profiles", params, jsonBody, new SupabaseCallback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onError(e);
+            public void onSuccess(String responseBody) {
+                parseSingleUser(responseBody, "Update profile failed", callback);
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                handleSingleRowResponse(response, "Update profile failed", callback);
+            public void onError(Exception e) {
+                callback.onError(e);
             }
         });
     }
 
-    private void handleSingleRowResponse(Response response, String errorPrefix, RepoCallback<User> callback) throws IOException {
-        if (!response.isSuccessful()) {
-            callback.onError(new IOException(errorPrefix + ": " + response.code()));
-            return;
-        }
-        String body = response.body() != null ? response.body().string() : null;
-        if (body == null) {
-            callback.onError(new IOException("Empty response body"));
-            return;
-        }
+    public void flagForDeletion(RepoCallback<Void> callback) {
+        String userId = resolveUserIdOrFail(callback);
+        if (userId == null) return;
+
+        List<String[]> params = new ArrayList<>();
+        params.add(new String[]{"user_id", "eq." + userId});
+
+        JSONObject patchBody = new JSONObject();
         try {
-            JSONArray arr = new JSONArray(body);
+            patchBody.put("deletion_requested_at", OffsetDateTime.now().toString());
+        } catch (JSONException e) {
+            callback.onError(e);
+            return;
+        }
+
+        restClient.update("user_profiles", params, patchBody.toString(), new SupabaseCallback() {
+            @Override
+            public void onSuccess(String responseBody) {
+                callback.onSuccess(null);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
+    private void parseSingleUser(String responseBody, String errorPrefix, RepoCallback<User> callback) {
+        try {
+            JSONArray arr = new JSONArray(responseBody);
             if (arr.length() == 0) {
-                callback.onError(new IOException(errorPrefix + ": no row returned"));
+                callback.onError(new IllegalStateException(errorPrefix + ": no row returned"));
                 return;
             }
             callback.onSuccess(User.fromJson(arr.getJSONObject(0)));
-        } catch (JSONException parseError) {
-            callback.onError(parseError);
+        } catch (JSONException e) {
+            callback.onError(e);
         }
     }
 
@@ -178,46 +154,5 @@ public class FoodRepository {
             callback.onError(e);
             return null;
         }
-    }
-
-    public void flagForDeletion(RepoCallback<Void> callback) {
-        String userId = resolveUserIdOrFail(callback);
-        if (userId == null) return;
-
-        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/rest/v1/user_profiles")
-                .newBuilder()
-                .addQueryParameter("user_id", "eq." + userId)
-                .build();
-
-        JSONObject patchBody = new JSONObject();
-        try {
-            patchBody.put("deletion_requested_at", OffsetDateTime.now().toString());
-        } catch (JSONException e) {
-            callback.onError(e);
-            return;
-        }
-
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-                .patch(RequestBody.create(patchBody.toString(), JSON))
-                .build();
-
-        authedClient.newCall(request).enqueue(new Callback() {
-           @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-               callback.onError(e);
-           }
-
-           @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-               if (!response.isSuccessful()) {
-                   callback.onError(new IOException("Flag for deletion failed: " + response.code()));
-                   return;
-               }
-               callback.onSuccess(null);
-           }
-
-        });
     }
 }
