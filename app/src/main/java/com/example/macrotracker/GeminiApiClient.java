@@ -69,7 +69,8 @@ public class GeminiApiClient {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        callback.onError(new IOException("Request failed: " + response.code()));
+                        String errorBody = response.body() != null ? response.body().string() : "no body";
+                        callback.onError(new IOException("Request failed: " + response.code() + " - " + errorBody));
                         return;
                     }
                     String responseBody = response.body() != null ? response.body().string() : null;
