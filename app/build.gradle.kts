@@ -58,6 +58,10 @@ android {
     // test
     testOptions {
         unitTests.isReturnDefaultValues = true
+        unitTests.all {
+            it.systemProperty("robolectric.logging.enabled", "true")
+        }
+        unitTests.isIncludeAndroidResources = true
     }
 }
 
@@ -75,5 +79,8 @@ dependencies {
 
     // LocalDate birthday - fix for minSdk 24, it must be 26 or higher
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
+    // Roboelectric - fix for mock method tests
+    testImplementation("org.robolectric:robolectric:4.14")
 
 }
