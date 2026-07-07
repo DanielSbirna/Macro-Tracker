@@ -1,9 +1,12 @@
 package com.example.macrotracker;
 
+import com.example.macrotracker.models.TargetMacros;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -27,13 +30,20 @@ public class GeminiApiClient {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
 
-    public void estimateMacros(String description, MacroCallback callback) {
+    public void estimateMealWithSuggestion(String description, BigDecimal caloriesSoFar,
+                                           BigDecimal proteinSoFar, BigDecimal carbsSoFar, BigDecimal fatsSoFar,
+                                           TargetMacros target, MacroCallback callback) {
         try {
-            String prompt = "Estimate calories, protein, carbs and fats for this food description,"
-                    + "assuming a typical serving if unspecified: \""
-                    + description + "\". "
+            String prompt = "Estimate calories, protein, carbs and fats for this food description, "
+                    + "assuming a typical serving if unspecified: \"" + description + "\". "
+                    + "The user's daily targets are: calories " + target.getCalories()
+                    + ", protein " + target.getProtein() + "g, carbs " + target.getCarbs()
+                    + "g, fats " + target.getFats() + "g. "
+                    + "So far today, before this meal, they've had: calories " + caloriesSoFar
+                    + ", protein " + proteinSoFar + "g, carbs " + carbsSoFar + "g, fats " + fatsSoFar + "g. "
                     + "Respond ONLY with a JSON object in this exact format, no other text: "
-                    + "{\"calories\": number, \"protein\": number, \"carbs\": number, \"fats\": number}";
+                    + "{\"calories\": number, \"protein\": number, \"carbs\": number, \"fats\": number, "
+                    + "\"suggestion\": \"one short sentence on what to add or drop from this meal so it fits better in the goal\"}";
 
             JSONObject part = new JSONObject().put("text", prompt);
             JSONObject content = new JSONObject()
