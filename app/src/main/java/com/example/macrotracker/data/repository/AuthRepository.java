@@ -1,7 +1,11 @@
 package com.example.macrotracker.data;
 
 import com.example.macrotracker.AuthCallback;
-import com.example.macrotracker.SupabaseAuthClient;
+import com.example.macrotracker.data.remote.SupabaseAuthClient;
+
+import org.json.JSONException;
+
+import java.io.IOException;
 
 public class AuthRepository {
 
@@ -64,6 +68,23 @@ public class AuthRepository {
                 callback.onError(e);
             }
         });
+    }
+
+    // sync refresh wrapper
+    public String refreshSessionSync() throws IOException, JSONException {
+        String refreshToken = tokenStorage.getRefreshToken();
+        if (refreshToken == null) {
+            throw new IllegalStateException("No refresh token available");
+        }
+
+        try {
+            String[] tokens = authClient.refreshSessionSync(refreshToken);
+            tokenStorage.saveTokens(tokens[0], tokens[1]);
+            return tokens[0];
+        } catch (IOException | JSONException e) {
+            tokenStorage.clearTokens();
+            throw e;
+        }
     }
 
     public void signOut(AuthCallback callback) {

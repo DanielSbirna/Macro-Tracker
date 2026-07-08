@@ -1,6 +1,6 @@
 package com.example.macrotracker.data;
 
-import com.example.macrotracker.GeminiApiClient;
+import com.example.macrotracker.data.remote.GeminiApiClient;
 import com.example.macrotracker.MacroCallback;
 import com.example.macrotracker.models.TargetMacros;
 
@@ -43,4 +43,5 @@ public class SuggestionRepository {
                         callback.onError(e);
                     }
                 });
-    }}
+    }
+}

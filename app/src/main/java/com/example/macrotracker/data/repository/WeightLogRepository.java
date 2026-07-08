@@ -1,5 +1,6 @@
 package com.example.macrotracker.data;
 
+import com.example.macrotracker.data.remote.SupabaseRestClient;
 import com.example.macrotracker.models.WeightLog;
 import com.example.macrotracker.util.JwtUtils;
 

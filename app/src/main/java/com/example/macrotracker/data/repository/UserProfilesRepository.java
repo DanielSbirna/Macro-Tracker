@@ -1,5 +1,6 @@
 package com.example.macrotracker.data;
 
+import com.example.macrotracker.data.remote.SupabaseRestClient;
 import com.example.macrotracker.models.User;
 import com.example.macrotracker.util.JwtUtils;
 
@@ -11,12 +12,12 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FoodRepository {
+public class UserProfilesRepository {
 
     private final SupabaseRestClient restClient;
     private final TokenStorage tokenStorage;
 
-    public FoodRepository(SupabaseRestClient restClient, TokenStorage tokenStorage) {
+    public UserProfilesRepository(SupabaseRestClient restClient, TokenStorage tokenStorage) {
         this.restClient = restClient;
         this.tokenStorage = tokenStorage;
     }

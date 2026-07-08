@@ -1,5 +1,6 @@
 package com.example.macrotracker.data;
 
+import com.example.macrotracker.data.remote.SupabaseRestClient;
 import com.example.macrotracker.models.TargetMacros;
 import com.example.macrotracker.util.JwtUtils;
 
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TargetMacrosRepository {
-    private SupabaseRestClient restClient;
+    private final SupabaseRestClient restClient;
     private final TokenStorage tokenStorage;
 
     public TargetMacrosRepository(SupabaseRestClient restClient, TokenStorage tokenStorage) {
