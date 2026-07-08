@@ -1,64 +1,52 @@
 package com.example.macrotracker.data;
 
-import com.example.macrotracker.BuildConfig;
 import com.example.macrotracker.models.Meal;
 import com.example.macrotracker.util.JwtUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
 public class MealLogRepository {
 
-    private static final String SUPABASE_URL = BuildConfig.SUPABASE_URL;
-    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-
-    private final OkHttpClient authedClient;
+    private final SupabaseRestClient restClient;
     private final TokenStorage tokenStorage;
 
-    public MealLogRepository(OkHttpClient authedClient, TokenStorage tokenStorage) {
-        this.authedClient = authedClient;
+    public MealLogRepository(SupabaseRestClient restClient, TokenStorage tokenStorage) {
+        this.restClient = restClient;
         this.tokenStorage = tokenStorage;
     }
 
     public void insertMeal(Meal meal, RepoCallback<Meal> callback) {
-        Request request;
+        String jsonBody;
         try {
-            RequestBody body = RequestBody.create(meal.toJson().toString(), JSON);
-            request = new Request.Builder()
-                    .url(SUPABASE_URL + "/rest/v1/meals")
-                    .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-                    .addHeader("Prefer", "return=representation")
-                    .post(body)
-                    .build();
+            jsonBody = meal.toJson().toString();
         } catch (JSONException e) {
             callback.onError(e);
             return;
         }
 
-        authedClient.newCall(request).enqueue(new Callback() {
+        restClient.insert("meals", jsonBody, new SupabaseCallback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onError(e);
+            public void onSuccess(String responseBody) {
+                try {
+                    JSONArray arr = new JSONArray(responseBody);
+                    if (arr.length() == 0) {
+                        callback.onError(new IllegalStateException("Insert meal failed: no row returned"));
+                        return;
+                    }
+                    callback.onSuccess(Meal.fromJson(arr.getJSONObject(0)));
+                } catch (JSONException parseError) {
+                    callback.onError(parseError);
+                }
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                handleSingleMealResponse(response, "Insert meal failed", callback);
+            public void onError(Exception e) {
+                callback.onError(e);
             }
         });
     }
@@ -71,35 +59,27 @@ public class MealLogRepository {
             return;
         }
 
-        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/rest/v1/meals")
-                .newBuilder()
-                .addQueryParameter("meal_id", "eq." + meal.getMealId())
-                .addQueryParameter("user_id", "eq." + userId)
-                .build();
+        List<String[]> params = new ArrayList<>();
+        params.add(new String[]{"meal_id", "eq." + meal.getMealId()});
+        params.add(new String[]{"user_id", "eq." + userId});
 
-        Request request;
-        try {
-            RequestBody body = RequestBody.create(meal.toJson().toString(), JSON);
-            request = new Request.Builder()
-                    .url(url)
-                    .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-                    .addHeader("Prefer", "return=representation")
-                    .patch(body)
-                    .build();
+        String jsonBody;
+        try{
+            jsonBody = meal.toJson().toString();
         } catch (JSONException e) {
             callback.onError(e);
             return;
         }
 
-        authedClient.newCall(request).enqueue(new Callback() {
+        restClient.update("meals", params, jsonBody, new SupabaseCallback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onError(e);
+            public void onSuccess(String responseBody) {
+                handleSingleMealResponse(responseBody, "Update meal failed", callback);
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                handleSingleMealResponse(response, "Update meal failed", callback);
+            public void onError(Exception e) {
+                callback.onError(e);
             }
         });
     }
@@ -108,31 +88,19 @@ public class MealLogRepository {
         String userId = resolveUserIdOrFail(callback);
         if (userId == null) return;
 
-        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/rest/v1/meals")
-                .newBuilder()
-                .addQueryParameter("meal_id", "eq." + mealId)
-                .addQueryParameter("user_id", "eq." + userId)
-                .build();
+        List<String[]> params = new ArrayList<>();
+        params.add(new String[]{"meal_id", "eq." + mealId});
+        params.add(new String[]{"user_id", "eq." + userId});
 
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-                .delete()
-                .build();
-
-        authedClient.newCall(request).enqueue(new Callback() {
+        restClient.delete("meals", params, new SupabaseCallback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onError(e);
+            public void onSuccess(String responseBody) {
+                callback.onSuccess(null);
             }
 
             @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) {
-                if (!response.isSuccessful()) {
-                    callback.onError(new IOException("Delete meal failed: " + response.code()));
-                    return;
-                }
-                callback.onSuccess(null);
+            public void onError(Exception e) {
+                callback.onError(e);
             }
         });
     }
@@ -142,14 +110,12 @@ public class MealLogRepository {
         String userId = resolveUserIdOrFail(callback);
         if (userId == null) return;
 
-        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/rest/v1/meals")
-                .newBuilder()
-                .addQueryParameter("user_id", "eq." + userId)
-                .addQueryParameter("order", "logged_at.desc")
-                .addQueryParameter("limit", String.valueOf(limit))
-                .build();
+        List<String[]> params = new ArrayList<>();
+        params.add(new String[]{"user_id", "eq." + userId});
+        params.add(new String[]{"order", "logged_at.desc"});
+        params.add(new String[]{"limit", String.valueOf(limit)});
 
-        fetchMealList(url, callback);
+        fetchMealList(params, callback);
     }
 
     // All meals whose logged_at falls within [start, end) — for the calendar day view
@@ -157,41 +123,19 @@ public class MealLogRepository {
         String userId = resolveUserIdOrFail(callback);
         if (userId == null) return;
 
-        HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/rest/v1/meals")
-                .newBuilder()
-                .addQueryParameter("user_id", "eq." + userId)
-                .addQueryParameter("logged_at", "gte." + start.toString())
-                .addQueryParameter("logged_at", "lt." + end.toString())
-                .addQueryParameter("order", "logged_at.asc")
-                .build();
+        List<String[]> params = new ArrayList<>();
+        params.add(new String[]{"user_id", "eq." + userId});
+        params.add(new String[]{"logged_at", "gte." + start.toString()}); // greater or equal - gte
+        params.add(new String[]{"logged_at", "lt." + end.toString()}); // less - lt.
+        params.add(new String[]{"order", "logged_at.asc"});
 
-        fetchMealList(url, callback);
+        fetchMealList(params, callback);
     }
 
-    private void fetchMealList(HttpUrl url, RepoCallback<List<Meal>> callback) {
-        Request request = new Request.Builder()
-                .url(url)
-                .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-                .get()
-                .build();
-
-        authedClient.newCall(request).enqueue(new Callback() {
+    private void fetchMealList(List<String[]> params, RepoCallback<List<Meal>> callback) {
+        restClient.select("meals", params, new SupabaseCallback() {
             @Override
-            public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                callback.onError(e);
-            }
-
-            @Override
-            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    callback.onError(new IOException("Fetch meals failed: " + response.code()));
-                    return;
-                }
-                String responseBody = response.body() != null ? response.body().string() : null;
-                if (responseBody == null) {
-                    callback.onError(new IOException("Empty response body"));
-                    return;
-                }
+            public void onSuccess(String responseBody) {
                 try {
                     JSONArray arr = new JSONArray(responseBody);
                     List<Meal> meals = new ArrayList<>();
@@ -203,23 +147,19 @@ public class MealLogRepository {
                     callback.onError(parseError);
                 }
             }
+
+            @Override
+            public void onError(Exception e) {
+                callback.onError(e);
+            }
         });
     }
 
-    private void handleSingleMealResponse(Response response, String errorPrefix, RepoCallback<Meal> callback) throws IOException {
-        if (!response.isSuccessful()) {
-            callback.onError(new IOException(errorPrefix + ": " + response.code()));
-            return;
-        }
-        String body = response.body() != null ? response.body().string() : null;
-        if (body == null) {
-            callback.onError(new IOException("Empty response body"));
-            return;
-        }
+    private void handleSingleMealResponse(String responseBody, String errorPrefix, RepoCallback<Meal> callback) {
         try {
-            JSONArray arr = new JSONArray(body);
+            JSONArray arr = new JSONArray(responseBody);
             if (arr.length() == 0) {
-                callback.onError(new IOException(errorPrefix + ": no row returned"));
+                callback.onError(new IllegalStateException(errorPrefix + ": no row returned"));
                 return;
             }
             callback.onSuccess(Meal.fromJson(arr.getJSONObject(0)));
