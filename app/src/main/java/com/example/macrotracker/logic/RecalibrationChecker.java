@@ -1,10 +1,9 @@
-package com.example.macrotracker.util;
+package com.example.macrotracker.logic;
 
 import com.example.macrotracker.data.repository.MealLogRepository;
 import com.example.macrotracker.data.RepoCallback;
 import com.example.macrotracker.data.repository.TargetMacrosRepository;
 import com.example.macrotracker.data.repository.WeightLogRepository;
-import com.example.macrotracker.logic.RecalibrationEngine;
 import com.example.macrotracker.models.Meal;
 import com.example.macrotracker.models.TargetMacros;
 import com.example.macrotracker.models.User;

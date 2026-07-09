@@ -1,4 +1,4 @@
-package com.example.macrotracker.util;
+package com.example.macrotracker.logic;
 
 import com.example.macrotracker.models.TargetMacros;
 

@@ -1,6 +1,5 @@
-package com.example.macrotracker.util;
+package com.example.macrotracker.logic;
 
-import com.example.macrotracker.logic.TdeeCalculator;
 import com.example.macrotracker.models.Meal;
 import com.example.macrotracker.models.TargetMacros;
 import com.example.macrotracker.models.User;

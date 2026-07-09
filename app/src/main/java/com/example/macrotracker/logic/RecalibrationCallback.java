@@ -1,6 +1,4 @@
-package com.example.macrotracker.util;
-
-import com.example.macrotracker.logic.RecalibrationResult;
+package com.example.macrotracker.logic;
 
 public interface RecalibrationCallback {
     void onSuggestionAvailable(RecalibrationResult result);
