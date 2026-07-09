@@ -83,4 +83,7 @@ dependencies {
     // Roboelectric - fix for mock method tests
     testImplementation("org.robolectric:robolectric:4.14")
 
+    //
+    implementation("androidx.security:security-crypto:1.1.0-alpha06");
+
 }
