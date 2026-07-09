@@ -5,4 +5,6 @@ public interface TokenStorage {
     String getAccessToken();
     String getRefreshToken();
     void clearTokens();
+    void setDeletionPending(boolean pending);
+    boolean isDeletionPending();
 }
