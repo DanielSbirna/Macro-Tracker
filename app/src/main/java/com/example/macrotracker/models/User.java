@@ -92,7 +92,7 @@ public class User {
         json.put("name", name);
         json.put("height", height.toPlainString());
         json.put("birthday", birthday.toString());
-        json.put("gender", String.valueOf("gender"));
+        json.put("gender", String.valueOf(gender));
         json.put("activity_multiplier", activityMultiplier.toPlainString());
         json.put("current_goal", currentGoal);
         json.put("timezone", timezone);
