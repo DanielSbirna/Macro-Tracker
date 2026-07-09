@@ -1,8 +1,7 @@
 package com.example.macrotracker.data.repository;
 
-import com.example.macrotracker.models.MacroEstimate;
-import com.example.macrotracker.data.RepoCallback;
 import com.example.macrotracker.data.remote.GeminiApiClient;
+import com.example.macrotracker.MacroCallback;
 import com.example.macrotracker.models.TargetMacros;
 
 import org.json.JSONException;
@@ -21,7 +20,7 @@ public class SuggestionRepository {
                                            BigDecimal carbsSoFar, BigDecimal fatsSoFar, TargetMacros target,
                                            RepoCallback<MacroEstimate> callback) {
         geminiApiClient.estimateMealWithSuggestion(description, caloriesSoFar, proteinSoFar, carbsSoFar, fatsSoFar, target,
-                new RepoCallback<String>() {
+                new MacroCallback() {
                     @Override
                     public void onSuccess(String responseJson) {
                         try {

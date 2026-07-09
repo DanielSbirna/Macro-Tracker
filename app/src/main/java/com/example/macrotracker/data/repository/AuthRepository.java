@@ -1,7 +1,6 @@
 package com.example.macrotracker.data.repository;
 
 import com.example.macrotracker.data.AuthCallback;
-import com.example.macrotracker.data.TokenStorage;
 import com.example.macrotracker.data.remote.SupabaseAuthClient;
 
 import org.json.JSONException;
