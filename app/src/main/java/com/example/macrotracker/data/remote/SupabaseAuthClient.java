@@ -1,8 +1,11 @@
-package com.example.macrotracker;
+package com.example.macrotracker.data.remote;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+
+import com.example.macrotracker.data.AuthCallback;
+import com.example.macrotracker.BuildConfig;
 
 import org.json.JSONException;
 import org.json.JSONObject;
