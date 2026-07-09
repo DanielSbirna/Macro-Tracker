@@ -1,6 +1,9 @@
-package com.example.macrotracker.data;
+package com.example.macrotracker.data.remote;
 
 import androidx.annotation.NonNull;
+
+import com.example.macrotracker.data.repository.AuthRepository;
+import com.example.macrotracker.data.TokenStorage;
 
 import java.io.IOException;
 
