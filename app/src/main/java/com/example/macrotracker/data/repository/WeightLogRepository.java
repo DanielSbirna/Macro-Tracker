@@ -1,5 +1,7 @@
-package com.example.macrotracker.data;
+package com.example.macrotracker.data.repository;
 
+import com.example.macrotracker.data.RepoCallback;
+import com.example.macrotracker.data.TokenStorage;
 import com.example.macrotracker.data.remote.SupabaseRestClient;
 import com.example.macrotracker.models.WeightLog;
 import com.example.macrotracker.util.JwtUtils;
@@ -29,7 +31,7 @@ public class WeightLogRepository {
             return;
         }
 
-        restClient.insert("weight_logs", jsonBody, new SupabaseCallback() {
+        restClient.insert("weight_logs", jsonBody, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 handleSingleWeightResponse(responseBody, "Insert weight Failed", callback);
@@ -62,7 +64,7 @@ public class WeightLogRepository {
             return;
         }
 
-        restClient.update("weight_logs", params, jsonBody, new SupabaseCallback() {
+        restClient.update("weight_logs", params, jsonBody, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 handleSingleWeightResponse(responseBody, "Update weight failed", callback);
@@ -83,7 +85,7 @@ public class WeightLogRepository {
         params.add(new String[]{"weight_id", "eq." + weightId});
         params.add(new String[]{"user_id", "eq." + userId});
 
-        restClient.delete("weight_logs", params, new SupabaseCallback() {
+        restClient.delete("weight_logs", params, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 callback.onSuccess(null);
@@ -133,7 +135,7 @@ public class WeightLogRepository {
 
 
     private void fetchWeightList(List<String[]> params, RepoCallback<List<WeightLog>> callback) {
-        restClient.select("weight_logs", params, new SupabaseCallback() {
+        restClient.select("weight_logs", params, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 try {

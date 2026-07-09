@@ -1,5 +1,7 @@
-package com.example.macrotracker.data;
+package com.example.macrotracker.data.repository;
 
+import com.example.macrotracker.data.RepoCallback;
+import com.example.macrotracker.data.TokenStorage;
 import com.example.macrotracker.data.remote.SupabaseRestClient;
 import com.example.macrotracker.models.User;
 import com.example.macrotracker.util.JwtUtils;
@@ -30,7 +32,7 @@ public class UserProfilesRepository {
         params.add(new String[]{"user_id", "eq." + userId});
         params.add(new String[]{"select", "*"});
 
-        restClient.select("user_profiles", params, new SupabaseCallback() {
+        restClient.select("user_profiles", params, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 try {
@@ -61,7 +63,7 @@ public class UserProfilesRepository {
             return;
         }
 
-        restClient.insert("user_profiles", jsonBody, new SupabaseCallback() {
+        restClient.insert("user_profiles", jsonBody, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 parseSingleUser(responseBody, "Insert profile failed", callback);
@@ -89,7 +91,7 @@ public class UserProfilesRepository {
             return;
         }
 
-        restClient.update("user_profiles", params, jsonBody, new SupabaseCallback() {
+        restClient.update("user_profiles", params, jsonBody, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 parseSingleUser(responseBody, "Update profile failed", callback);
@@ -117,7 +119,7 @@ public class UserProfilesRepository {
             return;
         }
 
-        restClient.update("user_profiles", params, patchBody.toString(), new SupabaseCallback() {
+        restClient.update("user_profiles", params, patchBody.toString(), new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 callback.onSuccess(null);

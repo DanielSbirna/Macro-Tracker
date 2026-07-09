@@ -1,5 +1,7 @@
-package com.example.macrotracker.data;
+package com.example.macrotracker.data.repository;
 
+import com.example.macrotracker.data.RepoCallback;
+import com.example.macrotracker.data.TokenStorage;
 import com.example.macrotracker.data.remote.SupabaseRestClient;
 import com.example.macrotracker.models.TargetMacros;
 import com.example.macrotracker.util.JwtUtils;
@@ -28,7 +30,7 @@ public class TargetMacrosRepository {
             return;
         }
 
-        restClient.insert("target_macros", jsonBody, new SupabaseCallback() {
+        restClient.insert("target_macros", jsonBody, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 try {
@@ -59,7 +61,7 @@ public class TargetMacrosRepository {
         params.add(new String[]{"user_id", "eq." + userId});
         params.add(new String[]{"order", "created_at.desc"});
 
-        restClient.select("target_macros", params, new SupabaseCallback() {
+        restClient.select("target_macros", params, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 try {
