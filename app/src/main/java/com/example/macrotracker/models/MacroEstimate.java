@@ -1,4 +1,4 @@
-package com.example.macrotracker.data;
+package com.example.macrotracker.models;
 
 import java.math.BigDecimal;
 public class MacroEstimate {
