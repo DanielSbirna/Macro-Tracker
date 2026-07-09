@@ -1,7 +1,8 @@
 package com.example.macrotracker;
 
-import com.example.macrotracker.data.SupabaseCallback;
-import com.example.macrotracker.data.SupabaseRestClient;
+import com.example.macrotracker.data.RepoCallback;
+import com.example.macrotracker.data.remote.GeminiApiClient;
+import com.example.macrotracker.data.remote.SupabaseRestClient;
 import com.example.macrotracker.models.TargetMacros;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +33,7 @@ public class NetworkIntegrationTest {
                 "a bowl of oatmeal with a banana",
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 new TargetMacros(BigDecimal.valueOf(2000), BigDecimal.valueOf(150), BigDecimal.valueOf(200), BigDecimal.valueOf(50)),
-                new MacroCallback() {
+                new RepoCallback<String>() {
                     @Override
                     public void onSuccess(String responseJson) {
                         result[0] = responseJson;
@@ -47,7 +48,7 @@ public class NetworkIntegrationTest {
                 });
 
         // 3. Wait up to 10 seconds for the response
-        boolean completed = latch.await(10, TimeUnit.SECONDS);
+        boolean completed = latch.await(30, TimeUnit.SECONDS);
 
         // 4. Assertions
         assertTrue("Test timed out before response was received", completed);
@@ -63,7 +64,7 @@ public class NetworkIntegrationTest {
         CountDownLatch latch = new CountDownLatch(1);
         final String[] result = {null};
 
-        dbClient.select("meals", null, new SupabaseCallback() {
+        dbClient.select("meals", null, new RepoCallback<String>() {
             @Override
             public void onSuccess(String jsonResponse) {
                 result[0] = jsonResponse;

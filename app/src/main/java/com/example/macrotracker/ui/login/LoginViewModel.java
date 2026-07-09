@@ -1,25 +1,25 @@
 package com.example.macrotracker.ui.login;
 
-import com.example.macrotracker.AuthCallback;
-import com.example.macrotracker.data.AuthRepository;
-import com.example.macrotracker.data.FoodRepository;
+import com.example.macrotracker.data.AuthCallback;
+import com.example.macrotracker.data.repository.AuthRepository;
+import com.example.macrotracker.data.repository.UserProfilesRepository;
 import com.example.macrotracker.data.RepoCallback;
 import com.example.macrotracker.models.User;
 
 public class LoginViewModel {
     private final AuthRepository authRepository;
-    private final FoodRepository foodRepository;
+    private final UserProfilesRepository userProfilesRepository;
 
-    public LoginViewModel(AuthRepository authRepository, FoodRepository foodRepository) {
+    public LoginViewModel(AuthRepository authRepository, UserProfilesRepository userProfilesRepository) {
         this.authRepository = authRepository;
-        this.foodRepository = foodRepository;
+        this.userProfilesRepository = userProfilesRepository;
     }
 
     public void login(String email, String password, LoginCallback callback) {
         authRepository.signIn(email, password, new AuthCallback() {
             @Override
             public void onSuccess(String accessToken, String refreshToken) {
-                foodRepository.getProfile(new RepoCallback<User>() {
+                userProfilesRepository.getProfile(new RepoCallback<User>() {
                     @Override
                     public void onSuccess(User user) {
                         if (user != null && user.isFlaggedForDeletion()) {
