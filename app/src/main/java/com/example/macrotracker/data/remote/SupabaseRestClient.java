@@ -1,6 +1,7 @@
-package com.example.macrotracker.data;
+package com.example.macrotracker.data.remote;
 
 import com.example.macrotracker.BuildConfig;
+import com.example.macrotracker.data.RepoCallback;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,7 +28,7 @@ public class SupabaseRestClient {
     }
 
     // query parameters: list of {key, value} pairs - {"user_id", "eq.123"}
-    public void select(String table, List<String[]> queryParams, SupabaseCallback callback) {
+    public void select(String table, List<String[]> queryParams, RepoCallback<String> callback) {
         HttpUrl url = buildUrl(table, queryParams);
 
         Request request = new Request.Builder()
@@ -39,7 +40,7 @@ public class SupabaseRestClient {
         execute(request, "Select failed", callback);
     }
 
-    public void insert(String table, String jsonBody, SupabaseCallback callback) {
+    public void insert(String table, String jsonBody, RepoCallback<String> callback) {
         Request request = new Request.Builder()
                 .url(SUPABASE_URL + "/rest/v1/" + table)
                 .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
@@ -50,7 +51,7 @@ public class SupabaseRestClient {
         execute(request, "Insert failed", callback);
     }
 
-    public void update(String table, List<String[]> queryParams, String jsonBody, SupabaseCallback callback) {
+    public void update(String table, List<String[]> queryParams, String jsonBody, RepoCallback<String> callback) {
         HttpUrl url = buildUrl(table, queryParams);
 
         Request request = new Request.Builder()
@@ -63,7 +64,7 @@ public class SupabaseRestClient {
         execute(request, "Update failed", callback);
     }
 
-    public void delete(String table, List<String[]> queryParams, SupabaseCallback callback) {
+    public void delete(String table, List<String[]> queryParams, RepoCallback<String> callback) {
         HttpUrl url = buildUrl(table, queryParams);
 
         Request request = new Request.Builder()
@@ -85,7 +86,7 @@ public class SupabaseRestClient {
         return builder.build();
     }
 
-    private void execute(Request request, String errorPrefix, SupabaseCallback callback) {
+    private void execute(Request request, String errorPrefix, RepoCallback<String> callback) {
         authedClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
