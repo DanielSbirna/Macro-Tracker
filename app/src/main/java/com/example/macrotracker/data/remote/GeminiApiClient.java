@@ -1,6 +1,8 @@
-package com.example.macrotracker;
+package com.example.macrotracker.data.remote;
 
+import com.example.macrotracker.BuildConfig;
 import com.example.macrotracker.models.TargetMacros;
+import com.example.macrotracker.data.RepoCallback;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,7 +34,7 @@ public class GeminiApiClient {
 
     public void estimateMealWithSuggestion(String description, BigDecimal caloriesSoFar,
                                            BigDecimal proteinSoFar, BigDecimal carbsSoFar, BigDecimal fatsSoFar,
-                                           TargetMacros target, MacroCallback callback) {
+                                           TargetMacros target, RepoCallback<String> callback) {
         try {
             String prompt = "Estimate calories, protein, carbs and fats for this food description, "
                     + "assuming a typical serving if unspecified: \"" + description + "\". "
