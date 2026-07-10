@@ -1,5 +1,7 @@
 package com.example.macrotracker.data.repository;
 
+import com.example.macrotracker.data.RepoCallback;
+import com.example.macrotracker.data.TokenStorage;
 import com.example.macrotracker.data.remote.SupabaseRestClient;
 import com.example.macrotracker.models.Meal;
 import com.example.macrotracker.util.JwtUtils;
@@ -30,7 +32,7 @@ public class MealLogRepository {
             return;
         }
 
-        restClient.insert("meals", jsonBody, new SupabaseCallback() {
+        restClient.insert("meals", jsonBody, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 try {
@@ -72,7 +74,7 @@ public class MealLogRepository {
             return;
         }
 
-        restClient.update("meals", params, jsonBody, new SupabaseCallback() {
+        restClient.update("meals", params, jsonBody, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 handleSingleMealResponse(responseBody, "Update meal failed", callback);
@@ -93,7 +95,7 @@ public class MealLogRepository {
         params.add(new String[]{"meal_id", "eq." + mealId});
         params.add(new String[]{"user_id", "eq." + userId});
 
-        restClient.delete("meals", params, new SupabaseCallback() {
+        restClient.delete("meals", params, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 callback.onSuccess(null);
@@ -134,7 +136,7 @@ public class MealLogRepository {
     }
 
     private void fetchMealList(List<String[]> params, RepoCallback<List<Meal>> callback) {
-        restClient.select("meals", params, new SupabaseCallback() {
+        restClient.select("meals", params, new RepoCallback<String>() {
             @Override
             public void onSuccess(String responseBody) {
                 try {
