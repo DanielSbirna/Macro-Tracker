@@ -1,3 +1,63 @@
 <resources>
     <string name="app_name">Macro Tracker</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="delete">Delete</string>
+    <string name="start_message">Start Tracking with Macro Tracker</string>
+    <string name="email">Email</string>
+    <string name="email_error">Please enter a valid email</string>
+    <string name="password">Password</string>
+    <string name="password_error">Please enter a valid password</string>
+    <string name="continue_with">Or continue with</string>
+    <string name="app_logo">Macro Tracker Logo</string>
+    <string name="remember_me">Remember me</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="no_account_signup">Don\'t have an account? Sign up</string>
+    <string name="account_login">Already have an account? Login</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="confirm_password_error">Passwords do not match</string>
+    <string name="back">back button</string>
+    <string name="terms_privacy">By tapping sign up, you agree to our \n [Terms of Service] and [Privacy Policy]</string>
+    <string name="complete_your_account">Complete your account</string>
+    <string name="decorative_logo">decorative mt logo at -45</string>
+    <string name="enable_notifications">Enable notifications</string>
+    <string name="settings">Account Settings</string>
+    <string name="home">Home button</string>
+    <string name="food_log">Food Log button</string>
+    <string name="assistant">Assistant button</string>
+    <string name="account">Account button</string>
+    <string name="add">Add button</string>
+    <string name="protein">PROTEIN</string>
+    <string name="carbs">CARBS</string>
+    <string name="fats">FATS</string>
+    <string name="remaining">REMAINING</string>
+
+    <string name="status_crushing_title">You are crushing it!</string>
+    <string name="status_crushing_body">You\'ve hit the protein goal %1$d days in a row. Congratulations!</string>
+
+    <string name="status_steady_title">Steady on track</string>
+    <string name="status_steady_body">Good macro balance today, pacing well. Keep it up.</string>
+
+    <string name="status_adjustment_title">Time for adjustments</string>
+    <string name="status_adjustment_body">Focus on lean protein and lighter meals to stay closer to your goal.</string>
+    <string name="trend_icon_desc">trending icon</string>
+
+    <string name="suggestion">Suggestion</string>
+    <string name="suggestion_icon_desc">suggestion icon</string>
+
+    <string name="previous_month">Previous month</string>
+    <string name="next_month">Next month</string>
+
+    <string name="kcal">Kcal</string>
+    <string name="protein_short">P</string>
+    <string name="carbs_short">C</string>
+    <string name="fats_short">F</string>
+    <string name="current_diet_goal">Current Diet Goal</string>
+
+    <string name="goal_main">MAIN</string>
+    <string name="goal_bulk">BULK</string>
+    <string name="goal_cut">CUT</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
