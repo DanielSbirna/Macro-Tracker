@@ -53,6 +53,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        viewBinding = true
     }
 
     // test
@@ -85,5 +86,7 @@ dependencies {
 
     //
     implementation("androidx.security:security-crypto:1.1.0-alpha06");
+
+    implementation("com.google.android.material:material:1.11.0")
 
 }
