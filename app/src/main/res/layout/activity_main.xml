@@ -5,15 +5,93 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavContainer" />
+
+    <!-- Bottom nav bar -->
+    <FrameLayout
+        android:id="@+id/bottomNavContainer"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/background"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            android:orientation="horizontal"
+            android:weightSum="5">
+
+            <ImageButton
+                android:id="@+id/navHome"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_home_blue"
+                android:scaleType="fitCenter"
+                android:padding="16dp"
+                android:contentDescription="@string/home"/>
+
+            <ImageButton
+                android:id="@+id/navFoodLog"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_food_log_blue"
+                android:scaleType="fitCenter"
+                android:padding="16dp"
+                android:contentDescription="@string/food_log"/>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <ImageButton
+                android:id="@+id/navAssistant"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_light_blue"
+                android:scaleType="fitCenter"
+                android:padding="16dp"
+                android:contentDescription="@string/assistant"/>
+
+            <ImageButton
+                android:id="@+id/navAccount"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_account_blue"
+                android:scaleType="fitCenter"
+                android:padding="16dp"
+                android:contentDescription="@string/account"/>
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/addButton"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:background="@drawable/bg_nav_bar"
+            android:src="@drawable/ic_add_white"
+            android:scaleType="centerInside"
+            android:padding="16dp"
+            android:contentDescription="@string/add"/>
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
