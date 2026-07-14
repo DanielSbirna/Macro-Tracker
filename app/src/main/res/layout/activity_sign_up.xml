@@ -6,7 +6,22 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    tools:context=".LoginActivity">
+    tools:context=".SignUpActivity">
+
+    <!-- Back button -->
+    <ImageButton
+        android:id="@+id/backBtn"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/back"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_arrow_left_blue"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Header -->
     <LinearLayout
@@ -21,7 +36,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/app_logo"
+            android:id="@+id/appLogo"
             android:layout_width="160dp"
             android:layout_height="106dp"
             android:contentDescription="@string/app_logo"
@@ -42,10 +57,10 @@
 
     <!-- Login Form -->
     <LinearLayout
-        android:id="@+id/loginSection"
+        android:id="@+id/signUpSection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
@@ -65,7 +80,7 @@
             android:textSize="14sp" />
 
         <EditText
-            android:id="@+id/email_input"
+            android:id="@+id/emailInput"
             android:layout_width="270dp"
             android:layout_height="48dp"
             android:autofillHints="emailAddress"
@@ -103,7 +118,7 @@
             android:textSize="14sp" />
 
         <EditText
-            android:id="@+id/password_input"
+            android:id="@+id/passwordInput"
             android:layout_width="270dp"
             android:layout_height="48dp"
             android:autofillHints="password"
@@ -130,32 +145,61 @@
             android:textSize="11sp"
             android:visibility="invisible" />
 
-        <!-- Forgot Password -->
+        <!-- Confrim Password -->
         <TextView
-            android:id="@+id/forgotPasswordLink"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="start"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/confirm_password"
+            android:textColor="@color/primary"
+            android:textSize="14sp" />
+
+        <EditText
+            android:id="@+id/confirmPasswordInput"
+            android:layout_width="270dp"
+            android:layout_height="48dp"
+            android:autofillHints="password"
+            android:background="@drawable/bg_bordered_container"
+            android:drawableEnd="@drawable/ic_eye_closed_gray"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:hint="@string/confirm_password"
+            android:inputType="textPassword"
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/border"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/confirmPasswordError"
+            android:layout_width="270dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/confirm_password_error"
+            android:textColor="@color/error"
+            android:textSize="11sp"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/termsPrivacy"
             android:layout_width="270dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="@string/forgot_password"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/terms_privacy"
+            android:textAlignment="center"
             android:textColor="@color/primary"
-            android:textSize="12sp" />
+            android:textSize="11sp"/>
 
-        <!-- Remember Me -->
-        <CheckBox
-            android:id="@+id/rememberMeCheckbox"
-            android:layout_width="270dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:buttonTint="@color/primary"
-            android:text="@string/remember_me"
-            android:textColor="@color/primary"
-            android:textSize="12sp" />
 
         <Button
-            android:id="@+id/loginbtn"
+            android:id="@+id/signUpbtn"
             style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
             android:layout_width="270dp"
             android:layout_height="48dp"
@@ -165,7 +209,7 @@
             android:insetTop="0dp"
             android:insetBottom="0dp"
             android:letterSpacing="0"
-            android:text="@string/login"
+            android:text="@string/sign_up"
             android:textAllCaps="false"
             android:textColor="@color/white"
             app:backgroundTint="@null" />
@@ -224,13 +268,13 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/signUpLink"
+            android:id="@+id/LoginLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:clickable="true"
             android:focusable="true"
-            android:text="@string/no_account_signup"
+            android:text="@string/account_login"
             android:textColor="@color/primary"
             android:textSize="13sp" />
 
