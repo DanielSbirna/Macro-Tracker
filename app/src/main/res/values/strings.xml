@@ -26,10 +26,10 @@
     <string name="food_log">Food Log button</string>
     <string name="assistant">Assistant button</string>
     <string name="account">Account button</string>
-    <string name="add">Add button</string>
-    <string name="protein">PROTEIN</string>
-    <string name="carbs">CARBS</string>
-    <string name="fats">FATS</string>
+    <string name="add">Add</string>
+    <string name="protein">Protein</string>
+    <string name="carbs">Carbs</string>
+    <string name="fats">Fats</string>
     <string name="remaining">REMAINING</string>
 
     <string name="status_crushing_title">You are crushing it!</string>
@@ -57,7 +57,31 @@
     <string name="goal_main">MAIN</string>
     <string name="goal_bulk">BULK</string>
     <string name="goal_cut">CUT</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="previous_day">previous day</string>
+    <string name="calories_remaining">Calories Remaining</string>
+
+    <string name="welcome_back_format">Welcome back, %1$s!</string>
+    <string name="of_x_kcal_format">of %1$s kcal</string>
+
+    <string name="login_failed">Login failed. Check your email and password.</string>
+    <string name="sign_up_failed">Sign up failed. Please try again.</string>
+    <string name="new_meal">New</string>
+    <string name="recent_meals">Recent Meals</string>
+
+    <string name="cancel">cancel</string>
+
+    <string name="breakfast">Breakfast</string>
+    <string name="lunch">Lunch</string>
+    <string name="snack">Snack</string>
+    <string name="dinner">Dinner</string>
+    <string name="assistant_input_hint">What did you eat? (e.g. a bowl of oatmeal)</string>
+    <string name="get_estimate">Get estimate</string>
+    <string name="info_strip">For better estimates use grams or \'big\' / \'small\' adjectives</string>
+    <string name="daily_total_updated">Daily Total Updated</string>
+    <string name="calories">Calories</string>
+    <string name="no_macros_yet">No macros yet</string>
+
 
 </resources>

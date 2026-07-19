@@ -3,18 +3,22 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="primary">#2563EB</color>
-    <color name="background">#F9F9FF</color>
+    <color name="primary">#0057FF</color>
+    <color name="background">#F8F7F4</color>
     <color name="surface">#FFFFFF</color>
 
-    <color name="error">#DC2626</color>
-    <color name="soft_error">#FEE2E2</color>
+    <color name="error">#991B1B</color>
+    <color name="soft_error">#FCA5A5</color>
 
-    <color name="border">#D4D4D4</color>
-    <color name="border_subtle">#F1F5F9</color>
+    <color name="overflow">#FF334B</color>
 
-    <color name="primary_gray_text">#191C20</color>
-    <color name="secondary_gray_text">#44474E</color>
+    <color name="ring_track">#EAE8E2</color>
+
+    <color name="border">#E5E3DC</color>
+    <color name="border_subtle">#F1EFE9</color>
+
+    <color name="primary_gray_text">#0F141C</color>
+    <color name="secondary_gray_text">#565E6C</color>
 
 
 </resources>
