@@ -54,7 +54,7 @@ public class WeightLogRepository {
 
         List<String[]> params = new ArrayList<>();
         params.add(new String[]{"weight_id", "eq." + weightLog.getWeightId()});
-        params.add(new String[]{"useri_id", "eq." + userId});
+        params.add(new String[]{"user_id", "eq." + userId});
 
         String jsonBody;
         try {
