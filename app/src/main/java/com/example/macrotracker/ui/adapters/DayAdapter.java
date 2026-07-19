@@ -13,6 +13,7 @@ import com.example.macrotracker.R;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
@@ -24,7 +25,7 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
     public interface OnDayClick { void onClick(LocalDate date); }
 
     public DayAdapter(List<LocalDate> days, LocalDate selected, OnDayClick onDayClick) {
-        this.days = days;
+        this.days = new ArrayList<>(days);
         this.selectedDate = selected;
         this.onDayClick = onDayClick;
     }
@@ -32,6 +33,25 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
     public void setSelected(LocalDate date) {
         this.selectedDate = date;
         notifyDataSetChanged();
+    }
+
+    public void appendDays(List<LocalDate> newDays) {
+        int start = days.size();
+        days.addAll(newDays);
+        notifyItemRangeInserted(start, newDays.size());
+    }
+
+    public void prependDays(List<LocalDate> newDays) {
+        days.addAll(0, newDays);
+        notifyItemRangeInserted(0, newDays.size());
+    }
+
+    public LocalDate getDayAt(int position) {
+        return days.get(position);
+    }
+
+    public int indexOf(LocalDate date) {
+        return days.indexOf(date);
     }
 
     @NonNull
