@@ -3,9 +3,14 @@ package com.example.macrotracker.data;
 import android.content.Context;
 
 import com.example.macrotracker.data.remote.AuthInterceptor;
+import com.example.macrotracker.data.remote.GeminiApiClient;
 import com.example.macrotracker.data.remote.SupabaseAuthClient;
 import com.example.macrotracker.data.remote.SupabaseRestClient;
 import com.example.macrotracker.data.repository.AuthRepository;
+import com.example.macrotracker.data.repository.MealLogRepository;
+import com.example.macrotracker.data.repository.SuggestionRepository;
+import com.example.macrotracker.data.repository.TargetMacrosRepository;
+import com.example.macrotracker.data.repository.UserProfilesRepository;
 
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +24,11 @@ public class ServiceLocator {
     public final SupabaseAuthClient authClient;
     public final AuthRepository authRepository;
     public final SupabaseRestClient restClient;
+    public final GeminiApiClient geminiApiClient;
+    public final SuggestionRepository suggestionRepository;
+    public final MealLogRepository mealLogRepository;
+    public final TargetMacrosRepository targetMacrosRepository;
+    public final UserProfilesRepository userProfilesRepository;
 
     private ServiceLocator(Context appContext) {
         tokenStorage = new TokenStorageImpl(appContext);
@@ -33,6 +43,12 @@ public class ServiceLocator {
                 .build();
 
         restClient = new SupabaseRestClient(authedHttpClient);
+
+        geminiApiClient = new GeminiApiClient();
+        suggestionRepository = new SuggestionRepository(geminiApiClient);
+        mealLogRepository = new MealLogRepository(restClient, tokenStorage);
+        targetMacrosRepository = new TargetMacrosRepository(restClient, tokenStorage);
+        userProfilesRepository = new UserProfilesRepository(restClient, tokenStorage);
     }
 
     public static ServiceLocator getInstance(Context context) {
