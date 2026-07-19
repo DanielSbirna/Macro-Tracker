@@ -24,9 +24,11 @@ public class SuggestionRepository {
                 new RepoCallback<String>() {
                     @Override
                     public void onSuccess(String responseJson) {
+                        String cleaned = stripCodeFences(responseJson);
                         try {
-                            JSONObject json = new JSONObject(responseJson);
+                            JSONObject json = new JSONObject(cleaned);
                             MacroEstimate estimate = new MacroEstimate(
+                                    json.getString("title"),
                                     new BigDecimal(json.get("calories").toString()),
                                     new BigDecimal(json.get("protein").toString()),
                                     new BigDecimal(json.get("carbs").toString()),
@@ -35,7 +37,9 @@ public class SuggestionRepository {
                             );
                             callback.onSuccess(estimate);
                         } catch (JSONException e) {
-                            callback.onError(e);
+                            callback.onError(new JSONException(
+                                    "Failed to parse Gemini response: " + e.getMessage()
+                                            + " | raw response: " + responseJson));
                         }
                     }
 
@@ -44,5 +48,19 @@ public class SuggestionRepository {
                         callback.onError(e);
                     }
                 });
+    }
+
+    private String stripCodeFences(String text) {
+        String trimmed = text.trim();
+        if (trimmed.startsWith("```")) {
+            int firstNewline = trimmed.indexOf('\n');
+            if (firstNewline != -1) {
+                trimmed = trimmed.substring(firstNewline + 1);
+            }
+            if (trimmed.endsWith("```")) {
+                trimmed = trimmed.substring(0, trimmed.length() - 3);
+            }
+        }
+        return trimmed.trim();
     }
 }
