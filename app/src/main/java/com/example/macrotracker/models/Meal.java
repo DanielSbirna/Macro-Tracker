@@ -8,13 +8,6 @@ import java.time.OffsetDateTime;
 
 public class Meal {
 
-    public enum MealType {
-        breakfast,
-        lunch,
-        snack,
-        dinner
-    }
-
     private Long mealId; // null until db insert
     private String userId;
     private String title;
@@ -73,7 +66,7 @@ public class Meal {
     public Long getMealId() {return mealId;}
     public String getUserId() {return userId;}
     public String getTitle() {return title;}
-    public MealType getType() {return type;}
+    public MealType getMealType() {return type;}
     public BigDecimal getCalories() {return calories;}
     public BigDecimal getProtein() {return protein;}
     public BigDecimal getCarbs()  {return carbs;}
@@ -85,7 +78,7 @@ public class Meal {
                 json.getLong("meal_id"),
                 json.getString("user_id"),
                 json.getString("title"),
-                MealType.valueOf(json.getString("type")),
+                MealType.fromDbValue(json.getString("type")),
                 new BigDecimal(json.getString("calories")),
                 new BigDecimal(json.getString("protein")),
                 new BigDecimal(json.getString("carbs")),
@@ -98,7 +91,7 @@ public class Meal {
         JSONObject json = new JSONObject();
         json.put("user_id", userId);
         json.put("title", title);
-        json.put("type", type.name());
+        json.put("type", type.getDbValue());
         json.put("calories", calories.toPlainString());
         json.put("protein", protein.toPlainString());
         json.put("carbs", carbs.toPlainString());
