@@ -44,7 +44,8 @@ public class GeminiApiClient {
                     + "So far today, before this meal, they've had: calories " + caloriesSoFar
                     + ", protein " + proteinSoFar + "g, carbs " + carbsSoFar + "g, fats " + fatsSoFar + "g. "
                     + "Respond ONLY with a JSON object in this exact format, no other text: "
-                    + "{\"calories\": number, \"protein\": number, \"carbs\": number, \"fats\": number, "
+                    + "{\"title\": \"a short 2-4 word title for this meal, e.g. 'Chicken and Rice Bowl'\", "
+                    + "\"calories\": number, \"protein\": number, \"carbs\": number, \"fats\": number, "
                     + "\"suggestion\": \"one short sentence on what to add or drop from this meal so it fits better in the goal\"}";
 
             JSONObject part = new JSONObject().put("text", prompt);
