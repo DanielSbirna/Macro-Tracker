@@ -97,7 +97,7 @@
                 android:id="@+id/completeAccLayout"
                 android:layout_width="371dp"
                 android:layout_height="128dp"
-                android:layout_marginTop="10dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/bg_bordered_container_subtle"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -146,7 +146,7 @@
                 android:id="@+id/goalLayout"
                 android:layout_width="371dp"
                 android:layout_height="128dp"
-                android:layout_marginTop="10dp"
+                android:layout_margin="10dp"
                 android:background="@drawable/bg_bordered_container_subtle"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -185,13 +185,6 @@
                     app:iconTint="@null" />
 
             </LinearLayout>
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/topCardBarrier"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:barrierDirection="bottom"
-                app:constraint_referenced_ids="completeAccLayout,goalLayout" />
 
             <!-- Remaining calories card -->
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -258,7 +251,7 @@
                 android:id="@+id/linearLayout3"
                 android:layout_width="371dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_margin="10dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -268,20 +261,20 @@
                 <com.example.macrotracker.ui.widgets.MacroCardView
                     android:id="@+id/proteinCard"
                     android:layout_width="117dp"
-                    android:layout_height="130dp"
+                    android:layout_height="140dp"
                     app:macroLabel="@string/protein" />
 
                 <com.example.macrotracker.ui.widgets.MacroCardView
                     android:id="@+id/carbsCard"
                     android:layout_width="117dp"
-                    android:layout_height="130dp"
+                    android:layout_height="140dp"
                     android:layout_marginStart="10dp"
                     app:macroLabel="@string/carbs" />
 
                 <com.example.macrotracker.ui.widgets.MacroCardView
                     android:id="@+id/fatsCard"
                     android:layout_width="117dp"
-                    android:layout_height="130dp"
+                    android:layout_height="140dp"
                     android:layout_marginStart="10dp"
                     app:macroLabel="@string/fats" />
 
@@ -292,7 +285,7 @@
                 layout="@layout/card_trend"
                 android:layout_width="371dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_margin="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
@@ -302,7 +295,7 @@
                 layout="@layout/card_suggestion"
                 android:layout_width="371dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_margin="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/trendCard" />
@@ -311,7 +304,7 @@
                 android:id="@+id/calendarStrip"
                 android:layout_width="371dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_margin="10dp"
                 android:gravity="center"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -321,7 +314,7 @@
                 android:id="@+id/statsRow"
                 android:layout_width="371dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_margin="10dp"
                 android:orientation="horizontal"
                 android:weightSum="4"
                 android:divider="@drawable/divider_stat_column"
@@ -332,30 +325,51 @@
                 app:layout_constraintBottom_toBottomOf="parent">
 
                 <com.example.macrotracker.ui.widgets.StatColumnView
+                    android:id="@+id/kcalStat"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:statLabel="@string/kcal" />
 
                 <com.example.macrotracker.ui.widgets.StatColumnView
+                    android:id="@+id/proteinStat"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:statLabel="@string/protein_short" />
 
                 <com.example.macrotracker.ui.widgets.StatColumnView
+                    android:id="@+id/carbsStat"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:statLabel="@string/carbs_short" />
 
                 <com.example.macrotracker.ui.widgets.StatColumnView
+                    android:id="@+id/fatsStat"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     app:statLabel="@string/fats_short" />
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/noMacrosText"
+                android:layout_width="371dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:padding="20dp"
+                android:text="@string/no_macros_yet"
+                android:textColor="@color/secondary_gray_text"
+                android:fontFamily="@font/nunito_medium"
+                android:textSize="14sp"
+                android:background="@drawable/bg_bordered_container_subtle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/calendarStrip"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
