@@ -1,0 +1,117 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/bg_bordered_container" android:orientation="vertical" android:padding="20dp">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <!--  Drag Handle  -->
+        <View
+            android:id="@+id/dragHandleStep2"
+            android:layout_width="48dp"
+            android:layout_height="5dp"
+            android:background="@drawable/bg_handle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!--  Cancel Button  -->
+        <ImageButton
+            android:id="@+id/cancelBtnStep2"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_cancel"
+            android:padding="8dp"
+            android:src="@drawable/ic_cancel_white"
+            android:contentDescription="@string/cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--  Meal type grid 2x2 -->
+    <GridLayout
+        android:id="@+id/mealTypeGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:columnCount="2"
+        android:rowCount="2"
+        android:useDefaultMargins="false">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/breakfastBtn"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_primary_container_cr20"
+            android:drawableEnd="@drawable/ic_breakfast_white"
+            android:fontFamily="@font/nunito_bold"
+            android:text="@string/breakfast"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:backgroundTint="@null" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/lunchBtn"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_primary_container_cr20"
+            android:drawableEnd="@drawable/ic_lunch_white"
+            android:fontFamily="@font/nunito_bold"
+            android:text="@string/lunch"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:backgroundTint="@null" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/snackBtn"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_primary_container_cr20"
+            android:drawableEnd="@drawable/ic_snack_white"
+            android:fontFamily="@font/nunito_bold"
+            android:text="@string/snack"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:backgroundTint="@null" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/dinnerBtn"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_columnWeight="1"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_primary_container_cr20"
+            android:drawableEnd="@drawable/ic_dinner_white"
+            android:fontFamily="@font/nunito_bold"
+            android:text="@string/dinner"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:backgroundTint="@null" />
+
+    </GridLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/addBtn"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="4dp"
+        android:background="@drawable/bg_primary_container_cr20"
+        android:fontFamily="@font/nunito_bold"
+        android:text="@string/add"
+        android:textSize="18sp"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:backgroundTint="@null" />
+
+</LinearLayout>

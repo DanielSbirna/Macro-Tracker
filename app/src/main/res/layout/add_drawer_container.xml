@@ -1,0 +1,13 @@
+<ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/addDrawerFlipper"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:inAnimation="@android:anim/slide_in_left"
+    android:outAnimation="@android:anim/slide_out_right">
+    <include
+        android:id="@+id/pageRecentMeals"
+        layout="@layout/add_drawer"/>
+    <include
+        android:id="@+id/pageMealType"
+        layout="@layout/add_drawer_meal_type"/>
+</ViewFlipper>
