@@ -76,6 +76,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/email"
+            android:fontFamily="@font/nunito_bold"
             android:textColor="@color/primary"
             android:textSize="14sp" />
 
@@ -87,6 +88,7 @@
             android:background="@drawable/bg_bordered_container"
             android:gravity="center_vertical"
             android:hint="@string/email"
+            android:fontFamily="@font/nunito_medium"
             android:inputType="textEmailAddress"
             android:padding="10dp"
             android:textColor="@color/black"
@@ -101,6 +103,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/email_error"
+            android:fontFamily="@font/nunito_medium"
             android:textColor="@color/error"
             android:textSize="11sp"
             android:visibility="invisible" />
@@ -114,6 +117,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/password"
+            android:fontFamily="@font/nunito_bold"
             android:textColor="@color/primary"
             android:textSize="14sp" />
 
@@ -127,6 +131,7 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:hint="@string/password"
+            android:fontFamily="@font/nunito_medium"
             android:inputType="textPassword"
             android:padding="10dp"
             android:textColor="@color/black"
@@ -141,6 +146,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/password_error"
+            android:fontFamily="@font/nunito_medium"
             android:textColor="@color/error"
             android:textSize="11sp"
             android:visibility="invisible" />
@@ -154,6 +160,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/confirm_password"
+            android:fontFamily="@font/nunito_bold"
             android:textColor="@color/primary"
             android:textSize="14sp" />
 
@@ -167,6 +174,7 @@
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
             android:hint="@string/confirm_password"
+            android:fontFamily="@font/nunito_medium"
             android:inputType="textPassword"
             android:padding="10dp"
             android:textColor="@color/black"
@@ -181,6 +189,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/confirm_password_error"
+            android:fontFamily="@font/nunito_medium"
             android:textColor="@color/error"
             android:textSize="11sp"
             android:visibility="invisible" />
@@ -193,6 +202,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:text="@string/terms_privacy"
+            android:fontFamily="@font/nunito_bold"
             android:textAlignment="center"
             android:textColor="@color/primary"
             android:textSize="11sp"/>
@@ -219,6 +229,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:text="@string/continue_with"
+            android:fontFamily="@font/nunito_bold"
             android:textColor="@color/primary" />
 
 
@@ -268,13 +279,14 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/LoginLink"
+            android:id="@+id/loginLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:clickable="true"
             android:focusable="true"
             android:text="@string/account_login"
+            android:fontFamily="@font/nunito_bold"
             android:textColor="@color/primary"
             android:textSize="13sp" />
 
