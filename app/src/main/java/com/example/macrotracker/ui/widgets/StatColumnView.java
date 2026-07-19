@@ -20,6 +20,11 @@ public class StatColumnView extends LinearLayout {
         setBackgroundResource(R.drawable.bg_bordered_container_subtle);
         setGravity(Gravity.CENTER_HORIZONTAL);
 
+        // convert dp to px for clean spacing
+        int paddingVertical = (int) (16 * context.getResources().getDisplayMetrics().density);
+        int paddingHorizontal = (int) (12 * context.getResources().getDisplayMetrics().density);
+        setPadding(paddingHorizontal, paddingVertical, paddingHorizontal, paddingVertical);
+
         LayoutInflater.from(context).inflate(R.layout.stat_column, this, true);
         labelView = findViewById(R.id.statLabel);
         valueView = findViewById(R.id.statValue);
