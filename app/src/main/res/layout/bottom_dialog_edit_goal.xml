@@ -30,6 +30,28 @@
         android:text="@string/update_goal_indication"
         android:textColor="@color/secondary_gray_text"/>
 
+    <AutoCompleteTextView
+        android:id="@+id/goalDropdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_bordered_container"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="14dp"
+        android:hint="@string/select_goal"
+        android:textColorHint="@color/secondary_gray_text"
+        android:textColor="@color/primary_gray_text"
+        android:fontFamily="@font/nunito_medium"
+        android:inputType="none"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:cursorVisible="false"
+        android:longClickable="false"
+        android:drawableEnd="@drawable/ic_dropdown_gray"
+        android:drawablePadding="8dp"
+        android:completionThreshold="0"
+        android:popupBackground="@drawable/bg_bordered_container"
+        android:dropDownVerticalOffset="8dp"
+        android:dropDownSelector="@drawable/bg_secondary_container"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,7 +61,7 @@
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCancel"
+            android:id="@+id/cancelBtn"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +72,7 @@
             android:fontFamily="@font/nunito_bold"/>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSave"
+            android:id="@+id/saveBtn"
             style="@style/Widget.Material3.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
