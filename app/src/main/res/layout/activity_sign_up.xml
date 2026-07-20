@@ -205,7 +205,9 @@
             android:fontFamily="@font/nunito_bold"
             android:textAlignment="center"
             android:textColor="@color/primary"
-            android:textSize="11sp"/>
+            android:textSize="11sp"
+            android:clickable="true"
+            android:focusable="true"/>
 
 
         <Button

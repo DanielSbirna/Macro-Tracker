@@ -32,6 +32,12 @@ public class SignUpActivity extends AppCompatActivity {
         binding.loginLink.setOnClickListener(v -> finish()); // back to LoginActivity
 
         // Social sign-up (Google/Facebook) isn't backed by any repo call yet.
+
+        binding.termsPrivacy.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    android.net.Uri.parse("https://github.com/DanielSbirna/Macro-Tracker/tree/main/legal"));
+            startActivity(intent);
+        });
     }
 
     private void attemptSignUp() {

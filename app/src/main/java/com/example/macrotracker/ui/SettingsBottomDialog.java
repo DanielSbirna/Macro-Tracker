@@ -16,9 +16,8 @@ import com.google.android.material.switchmaterial.SwitchMaterial;
 
 public class SettingsBottomDialog extends BottomSheetDialogFragment {
 
-    // TODO: swap in your real hosted URLs
-    private static final String PRIVACY_POLICY_URL = "";
-    private static final String TERMS_OF_SERVICE_URL = "";
+    private static final String PRIVACY_POLICY_URL = "https://github.com/DanielSbirna/Macro-Tracker/blob/main/legal/Privacy%20policy.md";
+    private static final String TERMS_OF_SERVICE_URL = "https://github.com/DanielSbirna/Macro-Tracker/blob/main/legal/Terms%20of%20service.md";
 
     @Nullable
     @Override

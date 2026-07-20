@@ -17,7 +17,7 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="confirm_password_error">Passwords do not match</string>
     <string name="back">back button</string>
-    <string name="terms_privacy">By tapping sign up, you agree to our \n [Terms of Service] and [Privacy Policy]</string>
+    <string name="terms_privacy">By tapping sign up, you agree to our \n Terms of Service and Privacy Policy</string>
     <string name="complete_your_account">Complete your account</string>
     <string name="decorative_logo">decorative mt logo at -45</string>
     <string name="enable_notifications">Enable notifications</string>
