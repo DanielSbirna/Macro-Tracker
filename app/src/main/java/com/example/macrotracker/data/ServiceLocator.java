@@ -11,6 +11,7 @@ import com.example.macrotracker.data.repository.MealLogRepository;
 import com.example.macrotracker.data.repository.SuggestionRepository;
 import com.example.macrotracker.data.repository.TargetMacrosRepository;
 import com.example.macrotracker.data.repository.UserProfilesRepository;
+import com.example.macrotracker.data.repository.WeightLogRepository;
 
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +30,7 @@ public class ServiceLocator {
     public final MealLogRepository mealLogRepository;
     public final TargetMacrosRepository targetMacrosRepository;
     public final UserProfilesRepository userProfilesRepository;
+    public final WeightLogRepository weightLogRepository;
 
     private ServiceLocator(Context appContext) {
         tokenStorage = new TokenStorageImpl(appContext);
@@ -49,6 +51,7 @@ public class ServiceLocator {
         mealLogRepository = new MealLogRepository(restClient, tokenStorage);
         targetMacrosRepository = new TargetMacrosRepository(restClient, tokenStorage);
         userProfilesRepository = new UserProfilesRepository(restClient, tokenStorage);
+        weightLogRepository = new WeightLogRepository(restClient, tokenStorage);
     }
 
     public static ServiceLocator getInstance(Context context) {
