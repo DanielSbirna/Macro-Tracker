@@ -5,10 +5,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.macrotracker.data.RepoCallback;
 import com.example.macrotracker.data.ServiceLocator;
@@ -25,6 +27,7 @@ import com.example.macrotracker.ui.widgets.MacroCardView;
 import com.example.macrotracker.ui.widgets.StatColumnView;
 import com.example.macrotracker.util.MacroMath;
 import com.example.macrotracker.util.MacroTotals;
+import com.example.macrotracker.viewmodel.AssistantViewModel;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -46,6 +49,9 @@ public class FragmentHome extends Fragment {
     private User currentUser;
     private TargetMacros currentTarget;
     private LocalDate selectedDate = LocalDate.now();
+
+    // suggestion
+    private AssistantViewModel uiViewModel;
 
     public FragmentHome() {
         // Required empty public constructor
@@ -77,7 +83,9 @@ public class FragmentHome extends Fragment {
 
         // Trend, Suggestion and statRow gone till they have content
         binding.trendCard.getRoot().setVisibility(View.GONE);
-        binding.suggestionCard.getRoot().setVisibility(View.GONE);
+        uiViewModel = new ViewModelProvider(requireActivity()).get(AssistantViewModel.class);
+        updateSuggestionCard();
+
         binding.statsRow.setVisibility(View.GONE);
 
         // Show no macros text
@@ -91,6 +99,16 @@ public class FragmentHome extends Fragment {
         bindGoalChangeButton();
         setupCalendarStrip();
         loadProfileAndTarget();
+    }
+
+    private void updateSuggestionCard() {
+        if (uiViewModel.lastEstimate != null) {
+            TextView suggestionBody = binding.suggestionCard.getRoot().findViewById(R.id.suggestionBody);
+            suggestionBody.setText(uiViewModel.lastEstimate.getSuggestion());
+            binding.suggestionCard.getRoot().setVisibility(View.VISIBLE);
+        } else {
+            binding.suggestionCard.getRoot().setVisibility(View.GONE);
+        }
     }
 
     private void setupCalendarStrip() {
