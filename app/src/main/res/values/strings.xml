@@ -70,7 +70,7 @@
     <string name="new_meal">New</string>
     <string name="recent_meals">Recent Meals</string>
 
-    <string name="cancel">cancel</string>
+    <string name="cancel">Cancel</string>
 
     <string name="breakfast">Breakfast</string>
     <string name="lunch">Lunch</string>
@@ -91,5 +91,86 @@
 
     <string name="trend_needs_adjustment_title">Time for adjustments</string>
     <string name="trend_needs_adjustment_body">Focus on lean protein and lighter meals to stay closer to your goal.</string>
+    <string name="account_tab">Account</string>
+    <string name="name_tag">Name</string>
+    <string name="user_name">User name</string>
+    <string name="user_email">User email</string>
+    <string name="height_cm">height cm</string>
+    <string name="weight_kg">weight kg</string>
+    <string name="user_info_tab">User Info</string>
+    <string name="weight_tag">Weight</string>
+    <string name="height_tag">Height</string>
+    <string name="birthday_tag">Birthday</string>
+    <string name="user_birthday">User birthday</string>
+    <string name="activity_tag">Activity</string>
+    <string name="user_activity">User activity</string>
+    <string name="goal_tag">Goal</string>
+    <string name="progress_tab">Progress</string>
+    <string name="started_on">Started On</string>
+    <string name="start_date">start date</string>
+    <string name="start_weight">start weight</string>
+    <string name="danger_zone">Danger Zone</string>
+    <string name="log_out">Log Out</string>
+    <string name="started_at">Started at</string>
+    <string name="account_avatar">account avatar</string>
+    <string name="edit_height_button">edit height button</string>
+    <string name="edit_weight_button">edit weight button</string>
+    <string name="edit_birthday_button">edit birthday button</string>
+    <string name="edit_activity_button">edit activity button</string>
+    <string name="edit_goal_button">edit goal button</string>
+    <string name="update_height">Update Height</string>
+    <string name="update_height_indication">Enter your current height in centimeters</string>
+    <string name="current_height">Current height</string>
+    <string name="save">Save</string>
+    <string name="update_weight">Update Weight</string>
+    <string name="update_weight_indication">Enter your current weight in kg</string>
+    <string name="current_weight">Current weight</string>
+    <string name="update_birthday">Update Birthday</string>
+    <string name="update_birthday_indication">Enter your birthday</string>
+    <string name="update_activity_level">Update activity level</string>
+    <string name="update_activity_indication">Enter your current activity level</string>
+    <string name="update_goal">Update goal</string>
+    <string name="update_goal_indication">Enter your current goal</string>
+    <string name="select_goal">Select goal</string>
+    <string name="select_activity_level">Select activity level</string>
+    <string name="select_birthday">Select birthday</string>
+    <string name="confirm">Confirm</string>
+
+    <string name="log_out_confirm_message">Are you sure you want to log out?</string>
+    <string name="delete_account">Delete account</string>
+    <string name="delete_account_confirm_message">This will schedule your account for deletion. This can\'t be undone. Continue?</string>
+    <string name="settings_title">Settings</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="complete_account_title">Complete Account</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_age">Age</string>
+    <string name="hint_weight_kg">Weight in kg</string>
+    <string name="hint_height_cm">Height in cm</string>
+    <string name="hint_weight">Current weight (kg)</string>
+    <string name="hint_height">Height (cm)</string>
+    <string name="hint_birthday">Date of birth</string>
+
+
+    <string-array name="genders">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+    <string-array name="activity_levels">
+        <item>Sedentary</item>
+        <item>Lightly active</item>
+        <item>Moderately active</item>
+        <item>Very active</item>
+    </string-array>
+
+    <string name="error_fill_all_fields">Please fill in all fields</string>
+    <string name="error_invalid_number">Please enter a valid number</string>
+    <string name="error_saving_account">Couldn\'t save your info — please try again</string>
+
+    <string name="reminder_channel_name">Daily Reminders</string>
+    <string name="reminder_channel_description">Reminders to log your meals and stay on track</string>
+    <string name="reminder_notification_title">Don\'t forget to log today\'s meals</string>
+    <string name="reminder_notification_body">Tap to open Macro Tracker and update your progress</string>
+
 
 </resources>

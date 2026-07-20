@@ -150,17 +150,6 @@
             android:textColor="@color/primary"
             android:textSize="12sp" />
 
-        <!-- Remember Me -->
-        <CheckBox
-            android:id="@+id/rememberMeCheckbox"
-            android:layout_width="270dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:buttonTint="@color/primary"
-            android:text="@string/remember_me"
-            android:textColor="@color/primary"
-            android:textSize="12sp" />
-
         <Button
             android:id="@+id/loginBtn"
             style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
