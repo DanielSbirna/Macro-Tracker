@@ -23,10 +23,10 @@ import com.example.macrotracker.models.User;
 import com.example.macrotracker.ui.GreetingHelper;
 import com.example.macrotracker.ui.widgets.MacroCardView;
 import com.example.macrotracker.ui.widgets.StatColumnView;
+import com.example.macrotracker.util.MacroMath;
+import com.example.macrotracker.util.MacroTotals;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.YearMonth;
@@ -66,6 +66,15 @@ public class FragmentHome extends Fragment {
         targetMacrosRepository = serviceLocator.targetMacrosRepository;
         mealLogRepository = serviceLocator.mealLogRepository;
 
+        getParentFragmentManager().setFragmentResultListener(
+                AddDrawerFragment.RESULT_KEY, getViewLifecycleOwner(),
+                (requestKey, bundle) -> {
+                    if (bundle.getBoolean(AddDrawerFragment.RESULT_MEAL_ADDED)) {
+                        loadTodayRing();
+                        loadMealsForSelectedDate();
+                    }
+                });
+
         // Trend, Suggestion and statRow gone till they have content
         binding.trendCard.getRoot().setVisibility(View.GONE);
         binding.suggestionCard.getRoot().setVisibility(View.GONE);
@@ -86,17 +95,17 @@ public class FragmentHome extends Fragment {
 
     private void setupCalendarStrip() {
         YearMonth currentMonth = YearMonth.now();
-        List<YearMonth> months = buildMonthRange(currentMonth); // e.g. 2 before, 2 after
+        List<YearMonth> months = buildMonthRange(currentMonth);
         binding.calendarStrip.setMonths(months, currentMonth);
 
         LocalDate today = LocalDate.now();
         List<LocalDate> days = buildWeekDays(today);
         binding.calendarStrip.setDays(days, today);
-
-        binding.calendarStrip.setOnDaySelectedListener(this::onDateSelected);
+        // circular views are pinned for today
+        binding.calendarStrip.setOnDaySelectedListener(this::onDaySelected);
     }
 
-    private void onDateSelected(LocalDate date) {
+    private void onDaySelected(LocalDate date) {
         if (date.equals(selectedDate)) return;
         selectedDate = date;
         loadMealsForSelectedDate();
@@ -144,13 +153,13 @@ public class FragmentHome extends Fragment {
                         public void onSuccess(TargetMacros target) {
                             runOnUi(() -> {
                                 currentTarget = target;
+                                loadTodayRing();
                                 loadMealsForSelectedDate();
                             });
                         }
 
                         @Override
                         public void onError(Exception e) {
-
                         }
                     });
                 });
@@ -166,8 +175,35 @@ public class FragmentHome extends Fragment {
         });
     }
 
+    private void loadTodayRing() {
+        if (currentTarget == null) return;
+
+        ZoneId zone = (currentUser != null && currentUser.getTimezone() != null)
+                ? ZoneId.of(currentUser.getTimezone())
+                : ZoneId.systemDefault();
+
+        LocalDate today = LocalDate.now(zone);
+        OffsetDateTime start = today.atStartOfDay(zone).toOffsetDateTime();
+        OffsetDateTime end = today.plusDays(1).atStartOfDay(zone).toOffsetDateTime();
+
+        mealLogRepository.getMealsBetween(start, end, new RepoCallback<List<Meal>>() {
+            @Override
+            public void onSuccess(List<Meal> meals) {
+                runOnUi(() -> {
+                    updateRing(meals, currentTarget);
+                    updateMacroCards(meals, currentTarget);
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // leave the ring/macro cards showing the last known totals
+            }
+        });
+    }
+
     private void loadMealsForSelectedDate() {
-        if (currentTarget == null) return; // nothing to compare today's totals against yet
+        if (currentTarget == null) return;
 
         ZoneId zone = (currentUser != null && currentUser.getTimezone() != null)
                 ? ZoneId.of(currentUser.getTimezone())
@@ -179,18 +215,18 @@ public class FragmentHome extends Fragment {
         mealLogRepository.getMealsBetween(start, end, new RepoCallback<List<Meal>>() {
             @Override
             public void onSuccess(List<Meal> meals) {
-                runOnUi(() -> updateMacroWidgets(meals, currentTarget));
+                runOnUi(() -> updateStatsRow(meals, currentTarget));
             }
 
             @Override
             public void onError(Exception e) {
-                // leave widgets showing the last known totals
+                // leave the stat row showing the last known totals
             }
         });
     }
 
-    // Rendering
 
+    // Rendering
     private void updateTopCard() {
         boolean accountComplete = currentUser != null;
 
@@ -210,67 +246,45 @@ public class FragmentHome extends Fragment {
         }
     }
 
-    private void updateMacroWidgets(List<Meal> meals, TargetMacros target) {
+    private void updateRing(List<Meal> meals, TargetMacros target) {
+        MacroTotals totals = MacroTotals.sum(meals);
+
+        BigDecimal remaining = target.getCalories().subtract(totals.calories);
+        binding.remainingCaloriesRing.setMax(target.getCalories().floatValue());
+        binding.remainingCaloriesRing.setProgress(totals.calories.floatValue());
+        binding.remainingCaloriesValue.setText(MacroMath.formatWhole(remaining));
+        binding.goalCaloriesValue.setText(getString(R.string.of_x_kcal_format, MacroMath.formatWhole(target.getCalories())));
+    }
+
+    private void updateMacroCards(List<Meal> meals, TargetMacros target) {
         binding.noMacrosText.setVisibility(View.GONE);
+
+        MacroTotals totals = MacroTotals.sum(meals);
+
+        bindMacroCard(binding.proteinCard, totals.protein, target.getProtein());
+        bindMacroCard(binding.carbsCard, totals.carbs, target.getCarbs());
+        bindMacroCard(binding.fatsCard, totals.fats, target.getFats());
+    }
+
+    private void updateStatsRow(List<Meal> meals, TargetMacros target) {
         binding.statsRow.setVisibility(View.VISIBLE);
 
-        BigDecimal eatenCalories = BigDecimal.ZERO;
-        BigDecimal eatenProtein = BigDecimal.ZERO;
-        BigDecimal eatenCarbs = BigDecimal.ZERO;
-        BigDecimal eatenFats = BigDecimal.ZERO;
+        MacroTotals totals = MacroTotals.sum(meals);
 
-        for (Meal meal : meals) {
-            eatenCalories = eatenCalories.add(meal.getCalories());
-            eatenProtein = eatenProtein.add(meal.getProtein());
-            eatenCarbs = eatenCarbs.add(meal.getCarbs());
-            eatenFats = eatenFats.add(meal.getFats());
-        }
-
-        // Remaining-calories ring: progress = eaten so far, max = target
-        BigDecimal remaining = target.getCalories().subtract(eatenCalories);
-        binding.remainingCaloriesRing.setMax(target.getCalories().floatValue());
-        binding.remainingCaloriesRing.setProgress(eatenCalories.floatValue());
-        binding.remainingCaloriesValue.setText(formatWhole(remaining));
-        binding.goalCaloriesValue.setText(getString(R.string.of_x_kcal_format, formatWhole(target.getCalories())));
-
-        // Macro cards
-        bindMacroCard(binding.proteinCard, eatenProtein, target.getProtein());
-        bindMacroCard(binding.carbsCard, eatenCarbs, target.getCarbs());
-        bindMacroCard(binding.fatsCard, eatenFats, target.getFats());
-
-        // Stat row
-        bindStatColumn(binding.kcalStat, eatenCalories, target.getCalories());
-        bindStatColumn(binding.proteinStat, eatenProtein, target.getProtein());
-        bindStatColumn(binding.carbsStat, eatenCarbs, target.getCarbs());
-        bindStatColumn(binding.fatsStat, eatenFats, target.getFats());
+        bindStatColumn(binding.kcalStat, totals.calories, target.getCalories());
+        bindStatColumn(binding.proteinStat, totals.protein, target.getProtein());
+        bindStatColumn(binding.carbsStat, totals.carbs, target.getCarbs());
+        bindStatColumn(binding.fatsStat, totals.fats, target.getFats());
     }
 
     private void bindMacroCard(MacroCardView card, BigDecimal eaten, BigDecimal target) {
-        card.setValue(formatWhole(eaten) + "g / " + formatWhole(target) + "g");
-        card.setProgress(percentOf(eaten, target));
+        card.setValue(MacroMath.formatWhole(eaten) + "g / " + MacroMath.formatWhole(target) + "g");
+        card.setProgress(MacroMath.percentOf(eaten, target));
     }
 
     private void bindStatColumn(StatColumnView stat, BigDecimal eaten, BigDecimal target) {
-        stat.setValue(formatWhole(eaten));
-        stat.setPercent(formatPercent(percentOf(eaten, target)) + "%");
-    }
-
-    private String formatPercent(float percent) {
-        if (Float.isNaN(percent) || Float.isInfinite(percent)) {
-            percent = 0f;
-        }
-        return String.format(Locale.getDefault(), "%.1f", percent);
-    }
-
-    private float percentOf(BigDecimal eaten, BigDecimal target) {
-        if (target == null || target.compareTo(BigDecimal.ZERO) <= 0) return 0f;
-        return eaten.divide(target, 4, RoundingMode.HALF_UP)
-                .multiply(new BigDecimal(100))
-                .floatValue();
-    }
-
-    private String formatWhole(BigDecimal value) {
-        return NumberFormat.getIntegerInstance(Locale.getDefault()).format(value);
+        stat.setValue(MacroMath.formatWhole(eaten));
+        stat.setPercent(MacroMath.formatPercent(MacroMath.percentOf(eaten, target)) + "%");
     }
 
     private GoalType resolveGoalType(String goal) {

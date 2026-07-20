@@ -16,12 +16,16 @@ import android.widget.TextView;
 import com.example.macrotracker.data.RepoCallback;
 import com.example.macrotracker.data.ServiceLocator;
 import com.example.macrotracker.data.repository.MealLogRepository;
+import com.example.macrotracker.data.repository.TargetMacrosRepository;
 import com.example.macrotracker.models.FoodLogRow;
 import com.example.macrotracker.models.Meal;
 import com.example.macrotracker.models.MealType;
+import com.example.macrotracker.models.TargetMacros;
 import com.example.macrotracker.ui.adapters.FoodLogAdapter;
 import com.example.macrotracker.ui.widgets.DayNavigatorView;
 import com.example.macrotracker.ui.widgets.LinearProgressView;
+import com.example.macrotracker.util.MacroMath;
+import com.example.macrotracker.util.MacroTotals;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -39,6 +43,13 @@ public class FoodLogFragment extends Fragment {
     private DayNavigatorView dayNavigator;
     private FoodLogAdapter adapter;
     private MealLogRepository mealLogRepository;
+    private TargetMacrosRepository targetMacrosRepository;
+    private TargetMacros currentTarget;
+
+    // view fields promoted from local vars in onViewCreated so bind methods can reach them
+    private TextView caloriesValue, caloriesPercent, caloriesTarget;
+    private TextView proteinPercent, carbPercent, fatsPercent;
+    private LinearProgressView caloriesProgress, proteinProgress, carbProgress, fatsProgress;
 
     public FoodLogFragment() {
         // Required empty public constructor
@@ -55,26 +66,64 @@ public class FoodLogFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mealLogRepository = ServiceLocator.getInstance(requireContext()).mealLogRepository;
+        ServiceLocator serviceLocator = ServiceLocator.getInstance(requireContext());
+        mealLogRepository = serviceLocator.mealLogRepository;
+        targetMacrosRepository = serviceLocator.targetMacrosRepository; // CHANGED
+
+        // CHANGED: refresh the currently viewed day after AddDrawerFragment logs a meal
+        getParentFragmentManager().setFragmentResultListener(
+                AddDrawerFragment.RESULT_KEY, getViewLifecycleOwner(),
+                (requestKey, bundle) -> {
+                    if (bundle.getBoolean(AddDrawerFragment.RESULT_MEAL_ADDED)) {
+                        loadMeals(selectedDate);
+                    }
+                });
 
         dayNavigator = view.findViewById(R.id.dayNavigator);
         dayNavigator.setDate(selectedDate);
         dayNavigator.setOnDateChangedListener(this::onDateChanged);
 
-        TextView caloriesValue = view.findViewById(R.id.caloriesValue);
-        LinearProgressView caloriesProgress = view.findViewById(R.id.caloriesProgress);
-        TextView caloriesPercent = view.findViewById(R.id.caloriesPercent);
-        TextView caloriesTarget = view.findViewById(R.id.caloriesTarget);
-        TextView proteinPercent = view.findViewById(R.id.proteinPercent);
-        TextView carbPercent = view.findViewById(R.id.carbPercent);
-        TextView fatsPercent = view.findViewById(R.id.fatsPercent);
+        caloriesValue = view.findViewById(R.id.caloriesValue);
+        caloriesProgress = view.findViewById(R.id.caloriesProgress);
+        caloriesPercent = view.findViewById(R.id.caloriesPercent);
+        caloriesTarget = view.findViewById(R.id.caloriesTarget);
+        proteinProgress = view.findViewById(R.id.proteinProgress); // CHANGED: was missing before
+        proteinPercent = view.findViewById(R.id.proteinPercent);
+        carbProgress = view.findViewById(R.id.carbProgress); // CHANGED: was missing before
+        carbPercent = view.findViewById(R.id.carbPercent);
+        fatsProgress = view.findViewById(R.id.fatsProgress); // CHANGED: was missing before
+        fatsPercent = view.findViewById(R.id.fatsPercent);
 
         RecyclerView foodLogList = view.findViewById(R.id.foodLogList);
         foodLogList.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new FoodLogAdapter();
         foodLogList.setAdapter(adapter);
 
-        loadMeals(selectedDate);
+        loadTargetThenMeals(); // CHANGED: was loadMeals(selectedDate) directly
+    }
+
+    private void loadTargetThenMeals() {
+        targetMacrosRepository.getLatestTarget(new RepoCallback<TargetMacros>() {
+            @Override
+            public void onSuccess(TargetMacros target) {
+                if (!isAdded()) return;
+                requireActivity().runOnUiThread(() -> {
+                    if (!isAdded()) return;
+                    currentTarget = target;
+                    loadMeals(selectedDate);
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                if (!isAdded()) return;
+                requireActivity().runOnUiThread(() -> {
+                    if (!isAdded()) return;
+                    // No target yet — still show the meal list, just skip bar binding
+                    loadMeals(selectedDate);
+                });
+            }
+        });
     }
 
     private void loadMeals(LocalDate date) {
@@ -89,6 +138,7 @@ public class FoodLogFragment extends Fragment {
                     if (!isAdded()) return;
                     List<FoodLogRow> rows = buildRows(meals);
                     adapter.submitRows(rows);
+                    bindMacroBars(meals);
                 });
             }
 
@@ -97,11 +147,34 @@ public class FoodLogFragment extends Fragment {
                 if (!isAdded()) return;
                 requireActivity().runOnUiThread(() -> {
                     if (!isAdded()) return;
-                    // TODO: surface an error state (snackbar/retry) instead of a silent empty list
                     adapter.submitRows(new ArrayList<>());
                 });
             }
         });
+    }
+
+    private void bindMacroBars(List<Meal> meals) {
+        if (currentTarget == null) return; // nothing to compare against yet
+
+        MacroTotals totals = MacroTotals.sum(meals);
+
+        caloriesProgress.setMax(currentTarget.getCalories().floatValue());
+        caloriesProgress.setProgress(totals.calories.floatValue());
+        caloriesValue.setText(MacroMath.formatWhole(currentTarget.getCalories().subtract(totals.calories)));
+        caloriesPercent.setText(MacroMath.formatPercent(MacroMath.percentOf(totals.calories, currentTarget.getCalories())) + "%");
+        caloriesTarget.setText(MacroMath.formatWhole(currentTarget.getCalories()) + " kcal");
+
+        proteinProgress.setMax(currentTarget.getProtein().floatValue());
+        proteinProgress.setProgress(totals.protein.floatValue());
+        proteinPercent.setText(MacroMath.formatPercent(MacroMath.percentOf(totals.protein, currentTarget.getProtein())) + "%");
+
+        carbProgress.setMax(currentTarget.getCarbs().floatValue());
+        carbProgress.setProgress(totals.carbs.floatValue());
+        carbPercent.setText(MacroMath.formatPercent(MacroMath.percentOf(totals.carbs, currentTarget.getCarbs())) + "%");
+
+        fatsProgress.setMax(currentTarget.getFats().floatValue());
+        fatsProgress.setProgress(totals.fats.floatValue());
+        fatsPercent.setText(MacroMath.formatPercent(MacroMath.percentOf(totals.fats, currentTarget.getFats())) + "%");
     }
 
     private List<FoodLogRow> buildRows(List<Meal> meals) {

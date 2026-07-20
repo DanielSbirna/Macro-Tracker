@@ -10,35 +10,42 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.macrotracker.R;
+import com.example.macrotracker.models.Meal;
 
 import java.util.List;
 
 public class RecentMealsAdapter extends RecyclerView.Adapter<RecentMealsAdapter.MealViewHolder> {
 
     public interface OnMealClickListener {
-        void onMealClick(String mealName);
+        void onMealClick(Meal meal);
     }
 
-    private final List<String> meals;
+    private final List<Meal> meals;
     private final OnMealClickListener listener;
 
-    public RecentMealsAdapter(List<String> meals, OnMealClickListener listener) {
+    public RecentMealsAdapter(List<Meal> meals, OnMealClickListener listener) {
         this.meals = meals;
         this.listener = listener;
+    }
+
+    public void updateMeals(List<Meal> newMeals) {
+        meals.clear();
+        meals.addAll(newMeals);
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public MealViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_meal_card, parent, false);
+                .inflate(R.layout.item_recent_meal, parent, false);
         return new MealViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MealViewHolder holder, int position) {
-        String meal = meals.get(position);
-        holder.title.setText(meal);
+        Meal meal = meals.get(position);
+        holder.title.setText(meal.getTitle());
 
         View.OnClickListener click = v -> listener.onMealClick(meal);
         holder.itemView.setOnClickListener(click);

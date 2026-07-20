@@ -25,6 +25,8 @@ import com.example.macrotracker.models.TargetMacros;
 import com.example.macrotracker.MealTypeDrawerFragment;
 import com.example.macrotracker.ui.widgets.LinearProgressView;
 import com.example.macrotracker.util.JwtUtils;
+import com.example.macrotracker.util.MacroMath;
+import com.example.macrotracker.util.MacroTotals;
 import com.google.android.material.button.MaterialButton;
 
 import java.math.BigDecimal;
@@ -81,7 +83,7 @@ public class AssistantFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mealInput = view.findViewById(R.id.inputMealField); // remember to add this id to the EditText in fragment_assistant.xml
+        mealInput = view.findViewById(R.id.inputMealField);
         getEstimateBtn = view.findViewById(R.id.getEstimateBtn);
 
         resultLayout = view.findViewById(R.id.resultLayout);
@@ -157,20 +159,8 @@ public class AssistantFragment extends Fragment {
         mealLogRepository.getMealsBetween(startOfToday, now, new RepoCallback<List<Meal>>() {
             @Override
             public void onSuccess(List<Meal> todaysMeals) {
-                BigDecimal caloriesSoFar = BigDecimal.ZERO;
-                BigDecimal proteinSoFar = BigDecimal.ZERO;
-                BigDecimal carbsSoFar = BigDecimal.ZERO;
-                BigDecimal fatsSoFar = BigDecimal.ZERO;
-
-                // TODO: confirm these getter names against your real Meal model
-                for (Meal meal : todaysMeals) {
-                    caloriesSoFar = caloriesSoFar.add(meal.getCalories());
-                    proteinSoFar = proteinSoFar.add(meal.getProtein());
-                    carbsSoFar = carbsSoFar.add(meal.getCarbs());
-                    fatsSoFar = fatsSoFar.add(meal.getFats());
-                }
-
-                requestEstimate(description, target, caloriesSoFar, proteinSoFar, carbsSoFar, fatsSoFar);
+                MacroTotals totals = MacroTotals.sum(todaysMeals); // CHANGED: was a manual for-loop over caloriesSoFar/proteinSoFar/etc.
+                requestEstimate(description, target, totals.calories, totals.protein, totals.carbs, totals.fats);
             }
 
             @Override
@@ -318,11 +308,10 @@ public class AssistantFragment extends Fragment {
         progressView.setMax(maxF);
         progressView.setProgress(valueF);
 
-        float percent = maxF > 0 ? (valueF / maxF) * 100f : 0f;
-        percentView.setText(String.format(Locale.getDefault(), "%.1f%%", percent));
+        float percent = MacroMath.percentOf(value, max);
+        percentView.setText(MacroMath.formatPercent(percent) + "%");
 
-        NumberFormat formatter = NumberFormat.getIntegerInstance(Locale.getDefault());
-        targetView.setText(formatter.format(max.longValue()) + " " + unit);
+        targetView.setText(MacroMath.formatWhole(max) + " " + unit);
     }
 
     private void setLoading(boolean loading) {
