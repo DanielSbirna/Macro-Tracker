@@ -93,53 +93,6 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/completeAccLayout"
-                android:layout_width="371dp"
-                android:layout_height="128dp"
-                android:layout_margin="10dp"
-                android:background="@drawable/bg_bordered_container_subtle"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/welcomeCard">
-
-                <Button
-                    android:id="@+id/completeAccBtn"
-                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-                    android:layout_width="270dp"
-                    android:layout_height="48dp"
-                    android:background="@drawable/bg_primary_container_cr10"
-                    android:drawableLeft="@drawable/ic_account_white"
-                    android:drawableRight="@drawable/ic_arrow_right_white"
-                    android:fontFamily="@font/nunito_bold"
-                    android:letterSpacing="0"
-                    android:text="@string/complete_your_account"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    app:backgroundTint="@null" />
-
-                <Button
-                    android:id="@+id/EnableNotificationsBtn"
-                    style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
-                    android:layout_width="270dp"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_primary_container_cr10"
-                    android:drawableLeft="@drawable/ic_notifications_white"
-                    android:drawableRight="@drawable/ic_arrow_right_white"
-                    android:fontFamily="@font/nunito_bold"
-                    android:letterSpacing="0"
-                    android:text="@string/enable_notifications"
-                    android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    app:backgroundTint="@null" />
-            </LinearLayout>
 
             <!-- Goal set card -->
             <LinearLayout
@@ -195,7 +148,7 @@
                 android:background="@drawable/bg_bordered_container_subtle"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/completeAccLayout">
+                app:layout_constraintTop_toBottomOf="@+id/goalLayout">
 
                 <com.example.macrotracker.ui.widgets.CircularProgressView
                     android:id="@+id/remainingCaloriesRing"
