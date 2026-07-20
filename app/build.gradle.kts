@@ -89,4 +89,9 @@ dependencies {
 
     implementation("com.google.android.material:material:1.11.0")
 
+    // notifications
+    implementation ("androidx.work:work-runtime-ktx:2.9.1");
+    implementation ("com.google.android.material:material:1.12.0")
+
+
 }
