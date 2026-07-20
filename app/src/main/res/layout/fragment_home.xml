@@ -132,7 +132,6 @@
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     app:backgroundTint="@null"
-                    app:icon="@drawable/ic_edit_white"
                     app:iconGravity="textEnd"
                     app:iconPadding="8dp"
                     app:iconTint="@null" />
