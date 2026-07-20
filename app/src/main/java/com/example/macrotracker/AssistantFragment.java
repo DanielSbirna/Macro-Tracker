@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,19 +23,17 @@ import com.example.macrotracker.models.MacroEstimate;
 import com.example.macrotracker.models.Meal;
 import com.example.macrotracker.models.MealType;
 import com.example.macrotracker.models.TargetMacros;
-import com.example.macrotracker.MealTypeDrawerFragment;
 import com.example.macrotracker.ui.widgets.LinearProgressView;
 import com.example.macrotracker.util.JwtUtils;
 import com.example.macrotracker.util.MacroMath;
 import com.example.macrotracker.util.MacroTotals;
+import com.example.macrotracker.viewmodel.AssistantViewModel;
 import com.google.android.material.button.MaterialButton;
 
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Locale;
 
 public class AssistantFragment extends Fragment {
 
@@ -54,6 +53,12 @@ public class AssistantFragment extends Fragment {
     private SuggestionRepository suggestionRepository;
     private MealLogRepository mealLogRepository;
     private TargetMacrosRepository targetMacrosRepository;
+
+    // cached from loadTodayProgress()
+    private TargetMacros currentTarget;
+
+    // survives view recreation
+    private AssistantViewModel uiViewModel;
 
     // Held between "estimate rendered" and "meal type confirmed", since the
     // drawer is a separate fragment/round-trip.
@@ -103,24 +108,77 @@ public class AssistantFragment extends Fragment {
         suggestionCard = view.findViewById(R.id.suggestionCard);
         suggestionBody = suggestionCard.findViewById(R.id.suggestionBody);
 
-        // Result card is empty until the first successful estimate
-        resultLayout.setVisibility(View.GONE);
-        suggestionCard.setVisibility(View.GONE);
+        uiViewModel = new ViewModelProvider(requireActivity()).get(AssistantViewModel.class);
+
+        if (uiViewModel.lastEstimate != null) {
+            suggestionBody.setText(uiViewModel.lastEstimate.getSuggestion());
+            suggestionCard.setVisibility(View.VISIBLE);
+        } else {
+            suggestionCard.setVisibility(View.GONE);
+        }
 
         getChildFragmentManager().setFragmentResultListener(
                 MealTypeDrawerFragment.RESULT_KEY, this, (requestKey, bundle) -> {
                     boolean confirmed = bundle.getBoolean(MealTypeDrawerFragment.RESULT_CONFIRMED);
                     if (!confirmed) {
-                        // User backed out via the drawer's X — estimate stays visible,
-                        // but nothing gets logged. Let them retry.
                         setLoading(false);
+                        loadTodayProgress();
                         return;
                     }
                     MealType chosenType = MealType.valueOf(bundle.getString(MealTypeDrawerFragment.RESULT_MEAL_TYPE));
+                    setLoading(true, "Saving…"); // Added dynamic button label
                     logEstimatedMeal(pendingEstimate, chosenType);
                 });
 
         getEstimateBtn.setOnClickListener(v -> onGetEstimateClicked());
+
+        loadTodayProgress();
+    }
+
+    private void loadTodayProgress() {
+        targetMacrosRepository.getLatestTarget(new RepoCallback<TargetMacros>() {
+            @Override
+            public void onSuccess(TargetMacros target) {
+                currentTarget = target;
+
+                OffsetDateTime startOfToday = OffsetDateTime.now()
+                        .withHour(0).withMinute(0).withSecond(0).withNano(0);
+                OffsetDateTime now = OffsetDateTime.now();
+
+                mealLogRepository.getMealsBetween(startOfToday, now, new RepoCallback<List<Meal>>() {
+                    @Override
+                    public void onSuccess(List<Meal> todaysMeals) {
+                        if (!isAdded()) return;
+                        requireActivity().runOnUiThread(() -> {
+                            MacroTotals totals = MacroTotals.sum(todaysMeals);
+                            bindTodayBars(totals, target);
+                            resultLayout.setVisibility(View.VISIBLE);
+                        });
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        // leave bars in their last known state
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                // no target yet (e.g. incomplete profile) — leave result card hidden
+            }
+        });
+    }
+
+    private void bindTodayBars(MacroTotals totals, TargetMacros target) {
+        bindBar(caloriesProgress, caloriesPercent, caloriesTarget,
+                totals.calories, target.getCalories(), "kcal");
+        bindBar(proteinProgress, proteinPercent, proteinTarget,
+                totals.protein, target.getProtein(), "g");
+        bindBar(carbProgress, carbPercent, carbsTarget,
+                totals.carbs, target.getCarbs(), "g");
+        bindBar(fatsProgress, fatsPercent, fatsTarget,
+                totals.fats, target.getFats(), "g");
     }
 
     private void onGetEstimateClicked() {
@@ -130,7 +188,7 @@ public class AssistantFragment extends Fragment {
             return;
         }
 
-        setLoading(true);
+        setLoading(true, "Estimating...");
 
         targetMacrosRepository.getLatestTarget(new RepoCallback<TargetMacros>() {
             @Override
@@ -187,7 +245,7 @@ public class AssistantFragment extends Fragment {
                         if (!isAdded()) return;
                         requireActivity().runOnUiThread(() -> {
                             renderEstimate(estimate, target, caloriesSoFar, proteinSoFar, carbsSoFar, fatsSoFar);
-
+                            setLoading(true,"Confirming...");
                             pendingEstimate = estimate;
                             MealTypeDrawerFragment.newInstance(getDefaultMealTypeForNow())
                                     .show(getChildFragmentManager(), "meal_type_drawer");
@@ -243,6 +301,7 @@ public class AssistantFragment extends Fragment {
                 requireActivity().runOnUiThread(() -> {
                     setLoading(false);
                     Toast.makeText(requireContext(), "Logged!", Toast.LENGTH_SHORT).show();
+                    loadTodayProgress();
                 });
             }
 
@@ -254,6 +313,7 @@ public class AssistantFragment extends Fragment {
                     Toast.makeText(requireContext(),
                             "Estimate shown, but saving failed: " + e.getMessage(),
                             Toast.LENGTH_LONG).show();
+                    loadTodayProgress();
                 });
             }
         });
@@ -296,6 +356,7 @@ public class AssistantFragment extends Fragment {
 
         resultLayout.setVisibility(View.VISIBLE);
         suggestionCard.setVisibility(View.VISIBLE);
+        uiViewModel.lastEstimate = estimate;
         // setLoading(false) happens once logEstimatedMeal() resolves, not here —
         // button stays disabled until the meal is actually saved.
     }
@@ -315,7 +376,11 @@ public class AssistantFragment extends Fragment {
     }
 
     private void setLoading(boolean loading) {
+        setLoading(loading, "Estimating…");
+    }
+
+    private void setLoading(boolean loading, String buttonText) {
         getEstimateBtn.setEnabled(!loading);
-        getEstimateBtn.setText(loading ? "Estimating…" : getString(R.string.get_estimate));
+        getEstimateBtn.setText(loading ? buttonText : getString(R.string.get_estimate));
     }
 }
