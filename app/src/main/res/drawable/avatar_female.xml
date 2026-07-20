@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-  
-</selector>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Circular background -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="@color/white"/>
+            <stroke
+                android:width="2dp"
+                android:color="@color/primary"/>
+        </shape>
+    </item>
+
+    <!-- Material icon -->
+    <item
+        android:width="48dp"
+        android:height="48dp"
+        android:gravity="center"
+        android:drawable="@drawable/ic_female_blue"/>
+
+</layer-list>
