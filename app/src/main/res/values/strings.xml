@@ -83,5 +83,13 @@
     <string name="calories">Calories</string>
     <string name="no_macros_yet">No macros yet</string>
 
+    <string name="trend_crushing_title">You are crushing it!</string>
+    <string name="trend_crushing_body">You\'ve hit the protein goal %d days in a row. Congratulations!</string>
+
+    <string name="trend_steady_title">Steady on track</string>
+    <string name="trend_steady_body">Good macro balance today, pacing well. Keep it up.</string>
+
+    <string name="trend_needs_adjustment_title">Time for adjustments</string>
+    <string name="trend_needs_adjustment_body">Focus on lean protein and lighter meals to stay closer to your goal.</string>
 
 </resources>

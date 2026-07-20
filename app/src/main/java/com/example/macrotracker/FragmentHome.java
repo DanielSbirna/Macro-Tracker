@@ -20,13 +20,16 @@ import com.example.macrotracker.data.repository.UserProfilesRepository;
 import com.example.macrotracker.databinding.FragmentHomeBinding;
 import com.example.macrotracker.models.GoalType;
 import com.example.macrotracker.models.Meal;
+import com.example.macrotracker.models.StreakStatus;
 import com.example.macrotracker.models.TargetMacros;
 import com.example.macrotracker.models.User;
 import com.example.macrotracker.ui.GreetingHelper;
+import com.example.macrotracker.ui.TrendCardController;
 import com.example.macrotracker.ui.widgets.MacroCardView;
 import com.example.macrotracker.ui.widgets.StatColumnView;
 import com.example.macrotracker.util.MacroMath;
 import com.example.macrotracker.util.MacroTotals;
+import com.example.macrotracker.util.StreakCalculator;
 import com.example.macrotracker.viewmodel.AssistantViewModel;
 
 import java.math.BigDecimal;
@@ -53,6 +56,9 @@ public class FragmentHome extends Fragment {
     // suggestion
     private AssistantViewModel uiViewModel;
 
+    // trend
+    private TrendCardController trendCardController;
+
     public FragmentHome() {
         // Required empty public constructor
     }
@@ -67,6 +73,8 @@ public class FragmentHome extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        trendCardController = new TrendCardController(binding.trendCard, requireContext());
+
         ServiceLocator serviceLocator = ServiceLocator.getInstance(requireContext());
         userProfilesRepository = serviceLocator.userProfilesRepository;
         targetMacrosRepository = serviceLocator.targetMacrosRepository;
@@ -78,11 +86,12 @@ public class FragmentHome extends Fragment {
                     if (bundle.getBoolean(AddDrawerFragment.RESULT_MEAL_ADDED)) {
                         loadTodayRing();
                         loadMealsForSelectedDate();
+                        loadStreakAndTrend();
                     }
                 });
 
-        // Trend, Suggestion and statRow gone till they have content
-        binding.trendCard.getRoot().setVisibility(View.GONE);
+
+
         uiViewModel = new ViewModelProvider(requireActivity()).get(AssistantViewModel.class);
         updateSuggestionCard();
 
@@ -173,6 +182,7 @@ public class FragmentHome extends Fragment {
                                 currentTarget = target;
                                 loadTodayRing();
                                 loadMealsForSelectedDate();
+                                loadStreakAndTrend();
                             });
                         }
 
@@ -243,24 +253,49 @@ public class FragmentHome extends Fragment {
         });
     }
 
+    private void loadStreakAndTrend() {
+        ZoneId zone = (currentUser != null && currentUser.getTimezone() != null)
+                ? ZoneId.of(currentUser.getTimezone())
+                : ZoneId.systemDefault();
+
+        LocalDate today = LocalDate.now(zone);
+
+        // fetch past 30 days to compute active streak
+        OffsetDateTime start = today.minusDays(30).atStartOfDay(zone).toOffsetDateTime();
+        OffsetDateTime end = today.plusDays(1).atStartOfDay(zone).toOffsetDateTime();
+
+        mealLogRepository.getMealsBetween(start, end, new RepoCallback<List<Meal>>() {
+            @Override
+            public void onSuccess(List<Meal> meals) {
+                runOnUi(() -> {
+                    StreakCalculator.StreakResult result = StreakCalculator.compute(meals, zone);
+
+                    if (result.hasStreak()) {
+                        trendCardController.render(result.getStatus(), result.getStreakDays());
+                    } else {
+                        trendCardController.hide();
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                runOnUi(() -> trendCardController.hide());
+            }
+        });
+    }
 
     // Rendering
     private void updateTopCard() {
         boolean accountComplete = currentUser != null;
 
-        if (!accountComplete) {
-            binding.completeAccLayout.setVisibility(View.VISIBLE);
-            binding.goalLayout.setVisibility(View.GONE);
-        } else {
-            binding.completeAccLayout.setVisibility(View.GONE);
-            binding.goalLayout.setVisibility(View.VISIBLE);
+        binding.goalLayout.setVisibility(View.VISIBLE);
 
-            binding.welcomeText.setText(GreetingHelper.getGreeting(currentUser.getName()));
+        binding.welcomeText.setText(GreetingHelper.getGreeting(currentUser.getName()));
 
-            GoalType goalType = resolveGoalType(currentUser.getCurrentGoal());
-            if (goalType != null) {
-                binding.goalChangeBtn.setText(goalType.label);
-            }
+        GoalType goalType = resolveGoalType(currentUser.getCurrentGoal());
+        if (goalType != null) {
+            binding.goalChangeBtn.setText(goalType.label);
         }
     }
 
