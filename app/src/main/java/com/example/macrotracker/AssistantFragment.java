@@ -23,6 +23,7 @@ import com.example.macrotracker.models.MacroEstimate;
 import com.example.macrotracker.models.Meal;
 import com.example.macrotracker.models.MealType;
 import com.example.macrotracker.models.TargetMacros;
+import com.example.macrotracker.ui.SettingsBottomDialog;
 import com.example.macrotracker.ui.widgets.LinearProgressView;
 import com.example.macrotracker.util.JwtUtils;
 import com.example.macrotracker.util.MacroMath;
@@ -133,6 +134,9 @@ public class AssistantFragment extends Fragment {
         getEstimateBtn.setOnClickListener(v -> onGetEstimateClicked());
 
         loadTodayProgress();
+
+        view.findViewById(R.id.settingsBtn).setOnClickListener(v ->
+                new SettingsBottomDialog().show(getParentFragmentManager(), "settings"));
     }
 
     private void loadTodayProgress() {

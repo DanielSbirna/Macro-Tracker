@@ -24,6 +24,7 @@ import com.example.macrotracker.models.StreakStatus;
 import com.example.macrotracker.models.TargetMacros;
 import com.example.macrotracker.models.User;
 import com.example.macrotracker.ui.GreetingHelper;
+import com.example.macrotracker.ui.SettingsBottomDialog;
 import com.example.macrotracker.ui.TrendCardController;
 import com.example.macrotracker.ui.widgets.MacroCardView;
 import com.example.macrotracker.ui.widgets.StatColumnView;
@@ -108,6 +109,9 @@ public class FragmentHome extends Fragment {
         bindGoalChangeButton();
         setupCalendarStrip();
         loadProfileAndTarget();
+
+        binding.settingsBtn.setOnClickListener(v ->
+        new SettingsBottomDialog().show(getParentFragmentManager(), "settings"));
     }
 
     private void updateSuggestionCard() {
@@ -287,9 +291,13 @@ public class FragmentHome extends Fragment {
 
     // Rendering
     private void updateTopCard() {
-        boolean accountComplete = currentUser != null;
-
         binding.goalLayout.setVisibility(View.VISIBLE);
+
+        if (currentUser == null) {
+            binding.welcomeText.setText(GreetingHelper.getGreeting(null)); // or a generic fallback greeting
+            binding.goalChangeBtn.setText(""); // no goal to show yet
+            return;
+        }
 
         binding.welcomeText.setText(GreetingHelper.getGreeting(currentUser.getName()));
 

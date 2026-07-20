@@ -14,7 +14,7 @@ import com.example.macrotracker.util.ReminderScheduler;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
-public class SettingsBottomSheet extends BottomSheetDialogFragment {
+public class SettingsBottomDialog extends BottomSheetDialogFragment {
 
     // TODO: swap in your real hosted URLs
     private static final String PRIVACY_POLICY_URL = "";

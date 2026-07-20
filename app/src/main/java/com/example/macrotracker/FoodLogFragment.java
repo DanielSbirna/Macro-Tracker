@@ -21,6 +21,7 @@ import com.example.macrotracker.models.FoodLogRow;
 import com.example.macrotracker.models.Meal;
 import com.example.macrotracker.models.MealType;
 import com.example.macrotracker.models.TargetMacros;
+import com.example.macrotracker.ui.SettingsBottomDialog;
 import com.example.macrotracker.ui.adapters.FoodLogAdapter;
 import com.example.macrotracker.ui.widgets.DayNavigatorView;
 import com.example.macrotracker.ui.widgets.LinearProgressView;
@@ -100,6 +101,9 @@ public class FoodLogFragment extends Fragment {
         foodLogList.setAdapter(adapter);
 
         loadTargetThenMeals(); // CHANGED: was loadMeals(selectedDate) directly
+
+        view.findViewById(R.id.settingsBtn).setOnClickListener(v ->
+                new SettingsBottomDialog().show(getParentFragmentManager(), "settings"));
     }
 
     private void loadTargetThenMeals() {
