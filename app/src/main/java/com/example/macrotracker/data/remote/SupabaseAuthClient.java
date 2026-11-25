@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.HttpUrl; //
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -194,6 +195,64 @@ public class SupabaseAuthClient {
                 callback.onSuccess(null, null);
             }
         });
+    }
+
+    // Social Login
+    // URL to open in the system browser
+    public String buildOAuthUrl(String provider, String redirectTo, String codeChallenge) {
+        return HttpUrl.parse(SUPABASE_URL + "/auth/v1/authorize").newBuilder()
+                .addQueryParameter("provider", provider)
+                .addQueryParameter("redirect_to", redirectTo)
+                .addQueryParameter("code_challenge", codeChallenge)
+                .addQueryParameter("code_challenge_method", "s256")
+                .build()
+                .toString();
+    }
+
+    public void exchangeAuthCode(String authCode, String codeVerifier, AuthCallback callback) {
+        try {
+            JSONObject requestJson = new JSONObject()
+                    .put("auth_code", authCode)
+                    .put("code_verifier", codeVerifier);
+
+            RequestBody body = RequestBody.create(requestJson.toString(), JSON);
+
+            Request request = new Request.Builder()
+                    .url(SUPABASE_URL + "/auth/v1/token?grant_type=pkce")
+                    .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                    callback.onError(e);
+                }
+
+                @Override
+                public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                    try (Response r = response) {
+                        if (!r.isSuccessful()) {
+                            callback.onError(new IOException("OAuth exchange failed: " + r.code()));
+                            return;
+                        }
+                        String responseBody = r.body() != null ? r.body().string() : null;
+                        if (responseBody == null) {
+                            callback.onError(new IOException("Empty response body"));
+                            return;
+                        }
+                        try {
+                            JSONObject json = new JSONObject(responseBody);
+                            callback.onSuccess(json.getString("access_token"), json.getString("refresh_token"));
+                        } catch (Exception parseError) {
+                            callback.onError(parseError);
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            callback.onError(e);
+        }
     }
 
     public String[] refreshSessionSync(String refreshToken) throws IOException, JSONException {

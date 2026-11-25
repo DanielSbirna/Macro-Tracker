@@ -7,4 +7,8 @@ public interface TokenStorage {
     void clearTokens();
     void setDeletionPending(boolean pending);
     boolean isDeletionPending();
+
+    // Social Login
+    void savePkceVerifier(String verifier);
+    String consumePkceVerifier();  // returns the stored verifier and clears it
 }

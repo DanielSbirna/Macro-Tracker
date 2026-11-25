@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 public class AccountPrefs {
     private static final String PREFS_NAME = "macro_tracker_prefs";
-    private static final String KEY_ACCOUNT_COMPLETED = "account_completed";
+    private static final String KEY_PREFIX_ACCOUNT_COMPLETED = "account_completed_";
 
     private final SharedPreferences prefs;
 
@@ -13,11 +13,11 @@ public class AccountPrefs {
         prefs = context.getApplicationContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    public boolean isAccountCompleted() {
-        return prefs.getBoolean(KEY_ACCOUNT_COMPLETED, false);
+    public boolean isAccountCompleted(String userId) {
+        return prefs.getBoolean(KEY_PREFIX_ACCOUNT_COMPLETED + userId, false);
     }
 
-    public void setAccountCompleted(boolean completed) {
-        prefs.edit().putBoolean(KEY_ACCOUNT_COMPLETED, completed).apply();
+    public void setAccountCompleted(String userId, boolean completed) {
+        prefs.edit().putBoolean(KEY_PREFIX_ACCOUNT_COMPLETED + userId, completed).apply();
     }
 }

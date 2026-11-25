@@ -13,6 +13,7 @@ import com.example.macrotracker.data.AuthCallback;
 import com.example.macrotracker.data.ServiceLocator;
 import com.example.macrotracker.data.repository.AuthRepository;
 import com.example.macrotracker.databinding.ActivitySignUpBinding;
+import com.example.macrotracker.ui.login.OAuthLauncher;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -31,7 +32,9 @@ public class SignUpActivity extends AppCompatActivity {
         binding.signUpbtn.setOnClickListener(v -> attemptSignUp());
         binding.loginLink.setOnClickListener(v -> finish()); // back to LoginActivity
 
-        // Social sign-up (Google/Facebook) isn't backed by any repo call yet.
+        // Social sign-up (Google/Facebook)
+        binding.btnGoogle.setOnClickListener(v -> OAuthLauncher.launch(this, OAuthLauncher.GOOGLE));
+        binding.btnFacebook.setOnClickListener(v -> OAuthLauncher.launch(this, OAuthLauncher.FACEBOOK));
 
         binding.termsPrivacy.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_VIEW,

@@ -3,12 +3,16 @@ package com.example.macrotracker.data.repository;
 import com.example.macrotracker.data.AuthCallback;
 import com.example.macrotracker.data.TokenStorage;
 import com.example.macrotracker.data.remote.SupabaseAuthClient;
+import com.example.macrotracker.util.PkceUtils;
 
 import org.json.JSONException;
 
 import java.io.IOException;
 
 public class AuthRepository {
+
+    // Social Login
+    public static final String OAUTH_REDIRECT_URI = "macrotracker://auth-callback";
 
     private final SupabaseAuthClient authClient;
     private final TokenStorage tokenStorage;
@@ -35,6 +39,33 @@ public class AuthRepository {
 
     public void signIn(String email, String password, AuthCallback callback) {
         authClient.signIn(email, password, new AuthCallback() {
+            @Override
+            public void onSuccess(String accessToken, String refreshToken) {
+                tokenStorage.saveTokens(accessToken, refreshToken);
+                callback.onSuccess(accessToken, refreshToken);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                callback.onError(e);
+            }
+        });
+    }
+
+    // Social Login
+    public String startOAuth(String provider) {
+        String verifier = PkceUtils.generateCodeVerifier();
+        tokenStorage.savePkceVerifier(verifier);
+        return authClient.buildOAuthUrl(provider, OAUTH_REDIRECT_URI, PkceUtils.codeChallengeFor(verifier));
+    }
+
+    public void completeOAuth(String authCode, AuthCallback callback) {
+        String verifier = tokenStorage.consumePkceVerifier();
+        if (verifier == null) {
+            callback.onError(new IllegalStateException("No pending OAuth request"));
+            return;
+        }
+        authClient.exchangeAuthCode(authCode, verifier, new AuthCallback() {
             @Override
             public void onSuccess(String accessToken, String refreshToken) {
                 tokenStorage.saveTokens(accessToken, refreshToken);

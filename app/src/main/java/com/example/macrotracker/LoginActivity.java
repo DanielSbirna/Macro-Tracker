@@ -14,6 +14,7 @@ import com.example.macrotracker.databinding.ActivityLoginBinding;
 import com.example.macrotracker.models.User;
 import com.example.macrotracker.ui.login.LoginCallback;
 import com.example.macrotracker.ui.login.LoginViewModel;
+import com.example.macrotracker.ui.login.OAuthLauncher;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -33,8 +34,9 @@ public class LoginActivity extends AppCompatActivity {
         binding.signUpLink.setOnClickListener(v ->
                 startActivity(new Intent(this, SignUpActivity.class)));
 
-        // Social login (Google/Facebook) and "forgot password" aren't backed by any
-        // repo call yet - leaving them inert rather than faking a flow.
+        // Social login (Google/Facebook)
+        binding.googleBtn.setOnClickListener(v -> OAuthLauncher.launch(this, OAuthLauncher.GOOGLE));
+        binding.facebookBtn.setOnClickListener(v -> OAuthLauncher.launch(this, OAuthLauncher.FACEBOOK));
     }
 
     private void attemptLogin() {

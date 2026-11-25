@@ -15,6 +15,9 @@ public class TokenStorageImpl implements TokenStorage {
     private static final String KEY_REFRESH_TOKEN = "refresh_token";
     private static final String KEY_DELETION_PENDING = "deletion_pending";
 
+    // Social Login
+    private static final String KEY_PKCE_VERIFIER = "pkce_verifier";
+
     private final SharedPreferences prefs;
 
     public TokenStorageImpl(Context context) {
@@ -70,5 +73,18 @@ public class TokenStorageImpl implements TokenStorage {
     @Override
     public synchronized boolean isDeletionPending() {
         return prefs.getBoolean(KEY_DELETION_PENDING, false);
+    }
+
+    // Social Login
+    @Override
+    public synchronized void savePkceVerifier(String verifier) {
+        prefs.edit().putString(KEY_PKCE_VERIFIER, verifier).apply();
+    }
+
+    @Override
+    public synchronized String consumePkceVerifier() {
+        String verifier = prefs.getString(KEY_PKCE_VERIFIER, null);
+        prefs.edit().remove(KEY_PKCE_VERIFIER).apply();
+        return verifier;
     }
 }

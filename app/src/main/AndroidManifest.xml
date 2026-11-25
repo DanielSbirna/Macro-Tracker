@@ -26,6 +26,19 @@
         </activity>
         <activity android:name=".LoginActivity" android:exported="false" />
         <activity android:name=".SignUpActivity" android:exported="false" />
+
+        <activity
+            android:name=".OAuthCallbackActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="macrotracker"
+                    android:host="auth-callback" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

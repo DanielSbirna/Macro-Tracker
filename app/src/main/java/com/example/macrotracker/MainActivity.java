@@ -80,24 +80,36 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNav();
         checkAccountCompletion();
         requestNotificationPermissionIfNeeded();
+
+        // TEMPORARY — fires ReminderWorker almost immediately for testing. Remove before shipping.
+        androidx.work.WorkManager.getInstance(this).enqueue(
+                new androidx.work.OneTimeWorkRequest.Builder(
+                        com.example.macrotracker.util.ReminderWorker.class).build());
     }
 
     // Account completion
-
     private void checkAccountCompletion() {
         AccountPrefs accountPrefs = new AccountPrefs(this);
         ServiceLocator serviceLocator = ServiceLocator.getInstance(this);
 
-        if (accountPrefs.isAccountCompleted()) return;
+        String userId;
+        try {
+            userId = JwtUtils.getUserIdFromToken(serviceLocator.tokenStorage.getAccessToken());
+        } catch (Exception e) {
+            android.util.Log.e("MainActivity", "Could not resolve userId, skipping completion check", e);
+            return;
+        }
+
+        if (accountPrefs.isAccountCompleted(userId)) return;
 
         serviceLocator.userProfilesRepository.getProfile(new RepoCallback<User>() {
             @Override
             public void onSuccess(User user) {
                 runOnUiThread(() -> {
                     if (user != null) {
-                        accountPrefs.setAccountCompleted(true);
+                        accountPrefs.setAccountCompleted(userId, true);
                     } else {
-                        showCompleteAccountDialog(serviceLocator, accountPrefs);
+                        showCompleteAccountDialog(serviceLocator, accountPrefs, userId);
                     }
                 });
             }
@@ -110,17 +122,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void showCompleteAccountDialog(ServiceLocator serviceLocator, AccountPrefs accountPrefs) {
+    private void showCompleteAccountDialog(ServiceLocator serviceLocator, AccountPrefs accountPrefs, String userId) {
         CompleteAccountBottomDialog dialog = new CompleteAccountBottomDialog();
         dialog.setOnAccountCompletedListener((details, onSuccess, onFailure) -> {
-
-            String userId;
-            try {
-                userId = JwtUtils.getUserIdFromToken(serviceLocator.tokenStorage.getAccessToken());
-            } catch (Exception e) {
-                onFailure.run();
-                return;
-            }
 
             char genderChar = "Male".equals(details.gender) ? 'M' : 'F';
 
@@ -155,13 +159,13 @@ public class MainActivity extends AppCompatActivity {
                     serviceLocator.weightLogRepository.insertWeight(initialWeight, new RepoCallback<WeightLog>() {
                         @Override
                         public void onSuccess(WeightLog loggedWeight) {
-                            accountPrefs.setAccountCompleted(true);
+                            accountPrefs.setAccountCompleted(userId, true);
                             runOnUiThread(onSuccess::run);
                         }
 
                         @Override
                         public void onError(Exception e) {
-                            accountPrefs.setAccountCompleted(true);
+                            accountPrefs.setAccountCompleted(userId, true);
                             runOnUiThread(onSuccess::run);
                         }
                     });
@@ -187,7 +191,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Notifications
-
     private void requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
@@ -198,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Bottom nav
-
     private void setupBottomNav() {
         findViewById(R.id.navHome).setOnClickListener(v -> {
             showFragment(new FragmentHome());
