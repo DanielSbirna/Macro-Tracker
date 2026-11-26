@@ -1,6 +1,7 @@
 package com.example.macrotracker.data.repository;
 
 import com.example.macrotracker.data.AuthCallback;
+import com.example.macrotracker.data.RepoCallback;
 import com.example.macrotracker.data.TokenStorage;
 import com.example.macrotracker.data.remote.SupabaseAuthClient;
 import com.example.macrotracker.util.PkceUtils;
@@ -77,6 +78,30 @@ public class AuthRepository {
                 callback.onError(e);
             }
         });
+    }
+
+    // Forgot Password
+    public static final String RECOVERY_REDIRECT_URI = "macrotracker://reset-password";
+
+    public void requestPasswordReset(String email, RepoCallback<Void> callback) {
+        String verifier = PkceUtils.generateCodeVerifier();
+        tokenStorage.savePkceVerifier(verifier);
+        authClient.requestPasswordRecovery(email, RECOVERY_REDIRECT_URI,
+                PkceUtils.codeChallengeFor(verifier), callback);
+    }
+
+    // Unlike completeOAuth(), this does NOT save the tokens: the recovery session
+    public void exchangeRecoveryCode(String authCode, AuthCallback callback) {
+        String verifier = tokenStorage.consumePkceVerifier();
+        if (verifier == null) {
+            callback.onError(new IllegalStateException("No pending reset request"));
+            return;
+        }
+        authClient.exchangeAuthCode(authCode, verifier, callback);
+    }
+
+    public void updatePassword(String accessToken, String newPassword, RepoCallback<Void> callback) {
+        authClient.updatePassword(accessToken, newPassword, callback);
     }
 
     public void refreshSession(AuthCallback callback) {

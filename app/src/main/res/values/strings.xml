@@ -175,4 +175,22 @@
     <string name="oauth_failed">Couldn\'t sign in with that provider. Please try again.</string>
     <string name="oauth_no_browser">No browser found to complete sign-in.</string>
 
+    <string name="forgot_password_title">Reset your password</string>
+    <string name="forgot_password_description">Enter your account email and we\'ll send you a link to choose a new password.</string>
+    <string name="send_reset_link">Send reset link</string>
+    <string name="back_to_login">Back to login</string>
+    <string name="reset_link_sent">If an account exists for that email, a reset link is on its way. Open it on this device.</string>
+    <string name="reset_rate_limited">Please wait a minute before requesting another email.</string>
+    <string name="reset_send_failed">Couldn\'t send the reset email. Please try again.</string>
+    <string name="reset_password_title">Choose a new password</string>
+    <string name="new_password">New password</string>
+    <string name="new_password_error">Password must be at least 8 characters</string>
+    <string name="update_password">Update password</string>
+    <string name="verifying_reset_link">Verifying your link\u2026</string>
+    <string name="reset_link_invalid">This reset link is invalid or has expired. Please request a new one.</string>
+    <string name="reset_password_rejected">That password can\'t be used. Choose a different one.</string>
+    <string name="reset_update_failed">Couldn\'t update your password. Please try again.</string>
+    <string name="password_updated">Password updated. You can log in now.</string>
+
+
 </resources>

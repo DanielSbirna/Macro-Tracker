@@ -37,6 +37,13 @@ public class LoginActivity extends AppCompatActivity {
         // Social login (Google/Facebook)
         binding.googleBtn.setOnClickListener(v -> OAuthLauncher.launch(this, OAuthLauncher.GOOGLE));
         binding.facebookBtn.setOnClickListener(v -> OAuthLauncher.launch(this, OAuthLauncher.FACEBOOK));
+
+        // Forgot password
+        binding.forgotPasswordLink.setOnClickListener(v -> {
+            Intent intent = new Intent(this, ForgotPasswordActivity.class);
+            intent.putExtra(ForgotPasswordActivity.EXTRA_EMAIL, binding.emailInput.getText().toString().trim());
+            startActivity(intent);
+        });
     }
 
     private void attemptLogin() {

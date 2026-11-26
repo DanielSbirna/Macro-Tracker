@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.macrotracker.data.AuthCallback;
+import com.example.macrotracker.data.RepoCallback;
 import com.example.macrotracker.BuildConfig;
 
 import org.json.JSONException;
@@ -253,6 +254,74 @@ public class SupabaseAuthClient {
         } catch (Exception e) {
             callback.onError(e);
         }
+    }
+
+    // Forgot Password
+    public void requestPasswordRecovery(String email, String redirectTo, String codeChallenge,
+                                        RepoCallback<Void> callback) {
+        try {
+            JSONObject requestJson = new JSONObject()
+                    .put("email", email)
+                    .put("code_challenge", codeChallenge)
+                    .put("code_challenge_method", "s256");
+
+            RequestBody body = RequestBody.create(requestJson.toString(), JSON);
+
+            HttpUrl url = HttpUrl.parse(SUPABASE_URL + "/auth/v1/recover").newBuilder()
+                    .addQueryParameter("redirect_to", redirectTo)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
+                    .post(body)
+                    .build();
+
+            enqueueUnit(request, "Recovery request failed", callback);
+        } catch (Exception e) {
+            callback.onError(e);
+        }
+    }
+
+    // Use short-lived rcovery session's access token
+    public void updatePassword(String accessToken, String newPassword, RepoCallback<Void> callback) {
+        try {
+            JSONObject requestJson = new JSONObject().put("password", newPassword);
+
+            RequestBody body = RequestBody.create(requestJson.toString(), JSON);
+
+            Request request = new Request.Builder()
+                    .url(SUPABASE_URL + "/auth/v1/user")
+                    .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
+                    .addHeader("Authorization", "Bearer " + accessToken)
+                    .put(body)
+                    .build();
+
+            enqueueUnit(request, "Password update failed", callback);
+        } catch (Exception e) {
+            callback.onError(e);
+        }
+    }
+
+    // For calls where only success/ failure matters.
+    private void enqueueUnit(Request request, String errorPrefix, RepoCallback<Void> callback) {
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+                callback.onError(e);
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                try (Response r = response) {
+                    if (!r.isSuccessful()) {
+                        callback.onError(new IOException(errorPrefix + ": " + r.code()));
+                        return;
+                    }
+                    callback.onSuccess(null);
+                }
+            }
+        });
     }
 
     public String[] refreshSessionSync(String refreshToken) throws IOException, JSONException {

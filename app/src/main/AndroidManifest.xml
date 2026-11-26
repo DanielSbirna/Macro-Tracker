@@ -39,6 +39,21 @@
                     android:host="auth-callback" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="macrotracker" android:host="reset-password" />
+            </intent-filter>
+
+        </activity>
+
+
     </application>
 
 </manifest>
