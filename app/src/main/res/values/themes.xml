@@ -1,9 +1,32 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.MacroTracker" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/primary_gray_text</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.MacroTracker.BottomSheetDialog</item>
     </style>
 
     <style name="Theme.MacroTracker" parent="Base.Theme.MacroTracker" />
+
+    <style name="ThemeOverlay.MacroTracker.BottomSheetDialog" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.MacroTracker.BottomSheet</item>
+    </style>
+
+    <style name="Widget.MacroTracker.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@color/surface</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.MacroTracker.BottomSheet</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.MacroTracker.BottomSheet</item>
+    </style>
+
+    <style name="ShapeAppearance.MacroTracker.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerSizeTopRight">20dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
 </resources>
